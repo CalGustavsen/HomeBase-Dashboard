@@ -6728,9 +6728,9 @@ Exact allowed values:
 - foundationType: "Full basement" | "Crawl space" | "Slab on grade" | "Pier and beam"
 - garageType: "Attached" | "Detached" | "No garage"
 
-For extractedItems be THOROUGH — include: all appliance ages, roof age/material, HVAC systems, water heater, electrical panel details, plumbing material and condition, foundation type and condition, attic insulation, drainage issues, structural observations, safety concerns, and any other notable findings.
+For extractedItems include the most important findings only: key appliance ages, roof, HVAC, water heater, electrical panel, plumbing, foundation. Limit to 15 items max.
 
-For repairItems list EVERY repair need, deficiency, safety concern, or recommended action in plain English a homeowner would understand.`;
+For repairItems list the top 20 most important repair needs, deficiencies, or safety items in plain English. Prioritize safety issues first.`;
 
     try{
       const resp=await fetch('https://api.anthropic.com/v1/messages',{
@@ -6738,7 +6738,7 @@ For repairItems list EVERY repair need, deficiency, safety concern, or recommend
         headers:apiHeaders(),
         body:JSON.stringify({
           model:'claude-sonnet-4-5',
-          max_tokens:3000,
+          max_tokens:4096,
           messages:[{role:'user',content:[contentBlock,{type:'text',text:prompt}]}]
         })
       });
