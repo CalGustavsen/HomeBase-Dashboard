@@ -434,8 +434,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .ob-doc-done .ob-doc-btn{border-color:var(--green-border);color:var(--green);background:var(--green-bg)}
 .ob-doc-done .ob-doc-name{color:var(--green)}
 /* ── Onboarding Wizard ── */
-#onboarding-overlay{position:fixed;inset:0;background:rgba(10,30,60,0.72);z-index:9000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);padding:1rem}
-.ob-card{background:var(--surface);border-radius:20px;width:100%;max-width:600px;box-shadow:0 20px 60px rgba(10,40,80,.28),0 4px 16px rgba(10,40,80,.14);overflow:hidden;position:relative;max-height:92vh;overflow-y:auto}
+#onboarding-overlay{position:fixed;inset:0;background:rgba(10,30,60,0.72);z-index:9000;display:none;align-items:center;justify-content:center;backdrop-filter:blur(8px);padding:1rem}
+#onboarding-overlay.ob-visible{display:flex!important}
+.ob-card{background:var(--surface);border-radius:20px;width:100%;max-width:600px;box-shadow:0 20px 60px rgba(10,40,80,.28),0 4px 16px rgba(10,40,80,.14);overflow-y:auto;overflow-x:hidden;position:relative;max-height:92vh}
 .ob-progress-bar{height:3px;background:var(--surface3);position:relative}
 .ob-progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--teal));border-radius:3px;transition:width .4s ease}
 .ob-step{display:none;padding:2.25rem 2.5rem 2rem}
@@ -833,7 +834,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
           <div style="font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:2rem" id="empty-state-sub">Track every home bill in one place — mortgage, utilities, subscriptions, and more. Add your first bill to get started.</div>
           <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
             <button class="btn btn-primary" style="font-size:14px;padding:10px 24px" onclick="openAddBill()">+ Add your first bill</button>
-            <button class="btn btn-ghost" style="font-size:14px;padding:10px 24px" id="empty-state-wizard-btn" onclick="obReset()" style="display:none">↩ Redo setup wizard</button>
+            <button class="btn btn-ghost" style="font-size:14px;padding:10px 24px;display:none" id="empty-state-wizard-btn" onclick="obReset()">↩ Redo setup wizard</button>
           </div>
           <!-- Re-engagement nudge for returning users -->
           <div id="empty-reengagement" style="display:none;margin-top:2rem;background:var(--accent-bg);border:1px solid var(--accent-border);border-radius:var(--radius);padding:1.25rem 1.5rem;text-align:left">
@@ -1779,6 +1780,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 
 <script>
 const BILLS_KEY='hb3_bills',HIST_KEY='hb3_hist',PROF_KEY='hb3_profile';
+const OB_KEY='hb3_onboarded';
+let obStep=1;
+const OB_TOTAL=7;
 let editId=null,billFilter='all',analyticsCategory='all';
 
 const CAT_ICONS={'Electricity':'⚡','Natural Gas':'🔥','Water & Sewer':'💧','Trash / Recycling':'🗑️','Utilities':'⚡','Mortgage / Rent':'🏦','Insurance':'🛡️','Taxes':'📋','Internet / Cable':'🌐','HOA':'🏘️','Warranty':'🔧','Subscriptions':'📱','Phone':'📞','Other':'🔩'};
@@ -2288,6 +2292,7 @@ function renderDashboard(){
   if(!bills.length){
     emptyWrap.style.display='block';
     dashContent.style.display='none';
+
     // Re-engagement: if they've been onboarded before but have no bills
     const isReturning=!!localStorage.getItem(OB_KEY);
     const reeng=document.getElementById('empty-reengagement');
@@ -6347,17 +6352,14 @@ window.addEventListener('DOMContentLoaded',()=>{
 });
 
 // ── Onboarding Wizard ─────────────────────────────────────────────────────
-const OB_KEY='hb3_onboarded';
-let obStep=1;
-const OB_TOTAL=7;
 
 function obShouldShow(){
   return!localStorage.getItem(OB_KEY);
 }
 function obInit(){
   if(!obShouldShow())return;
-  document.getElementById('onboarding-overlay').style.display='flex';
-  obGoTo(1);
+  document.getElementById('onboarding-overlay').classList.add('ob-visible');
+  setTimeout(function(){ (window.obGoTo||obGoTo)(1); }, 50);
 }
 function obGoTo(n){
   obStep=n;
@@ -6433,12 +6435,12 @@ function obFinish(){
 
   persist(bills,hist,profile);
   localStorage.setItem(OB_KEY,'1');
-  document.getElementById('onboarding-overlay').style.display='none';
+  document.getElementById('onboarding-overlay').classList.remove('ob-visible');
   renderDashboard();
 }
 function obSkip(){
   localStorage.setItem(OB_KEY,'1');
-  document.getElementById('onboarding-overlay').style.display='none';
+  document.getElementById('onboarding-overlay').classList.remove('ob-visible');
 }
 // Track uploaded docs during onboarding
 const obUploadedDocs=[];
@@ -6854,8 +6856,9 @@ function obInspReset(){
 }
 
 function obReset(){
-  localStorage.removeItem(OB_KEY);
-  document.getElementById('onboarding-overlay').style.display='flex';
+  localStorage.removeItem('hb3_onboarded');
+  var overlay=document.getElementById('onboarding-overlay');
+  if(overlay) overlay.classList.add('ob-visible');
   window.obGoTo(1);
 }
 function obUpdateSummary(){
@@ -6889,12 +6892,11 @@ function obUpdateSummary(){
   Object.entries(fields).forEach(([id,val])=>{const el=document.getElementById(id);if(el)el.textContent=val;});
 }
 
-// Auto-show on load
-window.addEventListener('DOMContentLoaded',()=>{setTimeout(obInit,300);});
+// (wizard auto-launch handled at bottom of script)
 </script>
 
 <!-- ONBOARDING WIZARD OVERLAY -->
-<div id="onboarding-overlay" style="display:none">
+<div id="onboarding-overlay">
   <div class="ob-card">
     <div class="ob-progress-bar"><div class="ob-progress-fill" id="ob-progress-fill" style="width:0%"></div></div>
 
@@ -6933,37 +6935,21 @@ window.addEventListener('DOMContentLoaded',()=>{setTimeout(obInit,300);});
       <!-- Feature list -->
       <div style="padding:1.75rem 2.5rem 0">
         <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:1rem">What HomeBase does for you</div>
-        <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:1.5rem">
+        <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:1.25rem">
 
-          <div style="display:flex;align-items:flex-start;gap:13px;padding:.875rem 1rem;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm)">
-            <div style="width:36px;height:36px;border-radius:9px;background:rgba(21,101,192,.1);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0">💰</div>
+          <div style="display:flex;align-items:flex-start;gap:13px;padding:.75rem 1rem;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm)">
+            <div style="width:32px;height:32px;border-radius:9px;background:rgba(21,101,192,.1);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">💰</div>
             <div>
               <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px">See exactly where your money goes</div>
-              <div style="font-size:12px;color:var(--text2);line-height:1.6">Every bill in one place — mortgage, utilities, insurance, subscriptions. Monthly totals, annual projections, and a clear breakdown by category.</div>
+              <div style="font-size:12px;color:var(--text2);line-height:1.6">Every bill in one place — mortgage, utilities, insurance, subscriptions. Monthly totals and annual projections.</div>
             </div>
           </div>
 
-          <div style="display:flex;align-items:flex-start;gap:13px;padding:.875rem 1rem;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm)">
-            <div style="width:36px;height:36px;border-radius:9px;background:rgba(26,143,98,.1);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0">✦</div>
+          <div style="display:flex;align-items:flex-start;gap:13px;padding:.75rem 1rem;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm)">
+            <div style="width:32px;height:32px;border-radius:9px;background:rgba(26,143,98,.1);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">✦</div>
             <div>
               <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px">Personalized savings recommendations</div>
-              <div style="font-size:12px;color:var(--text2);line-height:1.6">HomeBase analyzes your bills against your home's profile — state, size, systems — and surfaces specific opportunities. A single internet negotiation often saves $200+ a year.</div>
-            </div>
-          </div>
-
-          <div style="display:flex;align-items:flex-start;gap:13px;padding:.875rem 1rem;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm)">
-            <div style="width:36px;height:36px;border-radius:9px;background:rgba(176,106,16,.1);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0">🔧</div>
-            <div>
-              <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px">Stay ahead of repairs — not blindsided by them</div>
-              <div style="font-size:12px;color:var(--text2);line-height:1.6">Track the age of your HVAC, water heater, roof, and more. HomeBase tells you what's likely coming and what to budget — before it becomes an emergency.</div>
-            </div>
-          </div>
-
-          <div style="display:flex;align-items:flex-start;gap:13px;padding:.875rem 1rem;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm)">
-            <div style="width:36px;height:36px;border-radius:9px;background:rgba(0,131,143,.1);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0">📋</div>
-            <div>
-              <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px">Your documents, decoded</div>
-              <div style="font-size:12px;color:var(--text2);line-height:1.6">Upload your mortgage, insurance policy, HOA agreement, or home warranty. HomeBase reads them and tells you what actually matters — in plain English.</div>
+              <div style="font-size:12px;color:var(--text2);line-height:1.6">HomeBase analyzes your bills and surfaces specific opportunities to reduce your monthly home costs.</div>
             </div>
           </div>
 
@@ -6975,8 +6961,8 @@ window.addEventListener('DOMContentLoaded',()=>{setTimeout(obInit,300);});
           <span style="font-size:12px;color:var(--text2);line-height:1.5"><strong style="color:var(--text)">Your data never leaves your device.</strong> HomeBase stores everything in your browser locally — no accounts, no servers, no sharing.</span>
         </div>
 
-        <div style="text-align:center;padding-bottom:2rem">
-          <button class="btn btn-primary" style="font-size:14px;padding:12px 32px;box-shadow:0 4px 14px rgba(21,101,192,.35)" onclick="obGoTo(2)">Set up my dashboard — takes ~10 min →</button>
+        <div style="text-align:center;padding:1.5rem 2.5rem 2rem">
+          <button class="btn btn-primary" style="font-size:14px;padding:12px 32px;box-shadow:0 4px 14px rgba(21,101,192,.35)" onclick="window.obGoTo(2)">Set up my dashboard — takes ~10 min →</button>
           <div style="margin-top:.875rem"><button class="ob-skip-link" onclick="obSkip()">Skip for now — I'll explore on my own</button></div>
         </div>
       </div>
@@ -7759,6 +7745,25 @@ document.addEventListener('DOMContentLoaded',function(){
   const footerNav=document.getElementById('ob-footer-nav');
   if(footerNav) footerNav.style.display='none';
 });
+</script>
+
+<!-- WIZARD LAUNCHER: runs after full page is parsed, guaranteed -->
+<script>
+(function launchWizard(){
+  function showWizard(){
+    var overlay=document.getElementById('onboarding-overlay');
+    if(!overlay){ setTimeout(showWizard,100); return; }
+    if(!localStorage.getItem('hb3_onboarded')){
+      overlay.classList.add('ob-visible');
+      window.obGoTo(1);
+    }
+  }
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded', showWizard);
+  } else {
+    showWizard();
+  }
+})();
 </script>
 </body>
 </html>
