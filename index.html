@@ -6660,6 +6660,12 @@ async function obInspProcess(file){
   if(file.size>maxMB*1024*1024){alert('File too large. Please use a PDF or image under 20MB.');return;}
   if(!getApiKey()){showApiKeyModal(()=>obInspProcess(file));return;}
 
+  // Check if running from file:// which blocks API calls
+  if(window.location.protocol==='file:'){
+    alert('⚠️ AI features require the dashboard to be opened via a web server or your live GitHub Pages URL.\n\nPlease use: https://calgustavsen.github.io/HomeBase-Dashboard/\n\nThe file:// version on your computer cannot make API calls due to browser security restrictions.');
+    return;
+  }
+
   // Show loading, hide upload zone
   document.getElementById('ob-insp-upload-zone').style.display='none';
   document.getElementById('ob-insp-loading').style.display='block';
@@ -6737,13 +6743,16 @@ For repairItems list EVERY repair need, deficiency, safety concern, or recommend
         })
       });
       const data=await resp.json();
-      if(data.error) throw new Error(data.error.message);
-      const raw=data.content?.map(c=>c.text||'').join('')||'';
-      const clean=raw.replace(/```json|```/g,'').trim();
-      const parsed=JSON.parse(clean);
+      if(data.error) throw new Error('API error: '+(data.error.message||data.error.type||JSON.stringify(data.error)));
+      if(!data.content||!data.content.length) throw new Error('Empty response from API. Status: '+resp.status);
+      const raw=data.content.map(c=>c.text||'').join('').trim();
+      if(!raw) throw new Error('No text in API response');
+      // Try to extract JSON from the response even if it has surrounding text
+      const jsonMatch=raw.match(/\{[\s\S]*\}/);
+      if(!jsonMatch) throw new Error('No JSON found in response. Response started with: '+raw.substring(0,100));
+      const parsed=JSON.parse(jsonMatch[0]);
       _obInspData=parsed;
       _obInspData.filename=file.name;
-      // Also save to full inspection store so it appears in Inspection Report view
       saveInspection({...parsed,sections:parsed.sections||[]});
       document.getElementById('ob-insp-loading').style.display='none';
       obInspShowReview(parsed);
@@ -6753,7 +6762,8 @@ For repairItems list EVERY repair need, deficiency, safety concern, or recommend
       document.getElementById('ob-insp-upload-zone').innerHTML=`
         <div style="font-size:32px;margin-bottom:.625rem">⚠️</div>
         <div style="font-size:14px;font-weight:600;color:var(--red);margin-bottom:.375rem">Couldn't read that file</div>
-        <div style="font-size:12px;color:var(--text2);margin-bottom:.875rem">Make sure it's a clear PDF or image of the inspection report, then try again.</div>
+        <div style="font-size:12px;color:var(--text2);margin-bottom:.5rem">Make sure it's a clear PDF or image of the inspection report, then try again.</div>
+        <div style="font-size:11px;color:var(--amber);background:var(--amber-bg);border:1px solid var(--amber-border);border-radius:var(--radius-sm);padding:.5rem .75rem;margin-bottom:.875rem;text-align:left;word-break:break-all">${err.message||'Unknown error'}</div>
         <button class="btn btn-primary btn-sm" onclick="document.getElementById('ob-insp-file').click()">Try again</button>
         <input type="file" id="ob-insp-file" accept=".pdf,image/*" style="display:none" onchange="obInspUpload(this)"/>`;
     }
