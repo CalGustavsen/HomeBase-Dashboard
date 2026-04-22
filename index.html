@@ -1707,6 +1707,25 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
         <button class="btn btn-ghost" onclick="showView('recommendations');renderRecommendations()">Re-run Recommendations</button>
         <button class="btn btn-ghost" style="margin-left:auto;font-size:12px;color:var(--text3)" onclick="obReset()">⟳ Restart setup wizard</button>
       </div>
+
+      <!-- API Key Section -->
+      <div style="margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--border)">
+        <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:.375rem">🔑 Anthropic API Key</div>
+        <div style="font-size:12px;color:var(--text2);margin-bottom:.875rem;line-height:1.6">Required for AI features — document analysis, Smart Insights, and personalized recommendations. Your key is stored only in your browser. <a href="https://console.anthropic.com/" target="_blank" style="color:var(--accent)">Get a free key →</a></div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input type="password" id="profile-apikey-input" placeholder="sk-ant-..." style="flex:1;padding:9px 14px;border:1px solid var(--border2);border-radius:var(--radius-sm);font-size:13px;font-family:'DM Sans',sans-serif;background:var(--surface2);color:var(--text)"/>
+          <button class="btn btn-primary btn-sm" onclick="
+            const k=document.getElementById('profile-apikey-input').value.trim();
+            if(!k){setApiKey('');document.getElementById('profile-apikey-status').textContent='Key removed.';return;}
+            if(!k.startsWith('sk-')){alert('Please enter a valid API key starting with sk-');return;}
+            setApiKey(k);
+            document.getElementById('profile-apikey-input').value='';
+            document.getElementById('profile-apikey-status').textContent='✓ Key saved!';
+            setTimeout(()=>document.getElementById('profile-apikey-status').textContent=getApiKey()?'✓ API key is set':'No key saved',2000);
+          ">Save Key</button>
+        </div>
+        <div id="profile-apikey-status" style="font-size:11px;color:var(--green);margin-top:.5rem"></div>
+      </div>
     </div>
 
   </div>
@@ -1781,6 +1800,44 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 <script>
 const BILLS_KEY='hb3_bills',HIST_KEY='hb3_hist',PROF_KEY='hb3_profile';
 const OB_KEY='hb3_onboarded';
+const APIKEY_KEY='hb3_apikey';
+
+// ── API Key helpers ────────────────────────────────────────────────────────
+function getApiKey(){ return localStorage.getItem(APIKEY_KEY)||''; }
+function setApiKey(k){ localStorage.setItem(APIKEY_KEY,k.trim()); }
+function apiHeaders(){
+  return{'Content-Type':'application/json','x-api-key':getApiKey(),'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'};
+}
+function requireApiKey(onSuccess){
+  const key=getApiKey();
+  if(key){ onSuccess(); return; }
+  showApiKeyModal(onSuccess);
+}
+function showApiKeyModal(onSuccess){
+  const overlay=document.createElement('div');
+  overlay.id='apikey-modal';
+  overlay.style.cssText='position:fixed;inset:0;background:rgba(10,30,60,.72);z-index:9500;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);padding:1rem';
+  overlay.innerHTML=`
+    <div style="background:var(--surface);border-radius:var(--radius);padding:2rem;width:100%;max-width:460px;box-shadow:var(--shadow-lg)">
+      <div style="font-family:'Fraunces',serif;font-size:20px;font-weight:500;margin-bottom:.5rem;color:var(--text)">🔑 Enter your Anthropic API Key</div>
+      <div style="font-size:13px;color:var(--text2);line-height:1.65;margin-bottom:1.25rem">HomeBase uses Claude AI to analyze documents and generate insights. To use AI features, you need a free Anthropic API key.<br><br>
+      <a href="https://console.anthropic.com/" target="_blank" style="color:var(--accent)">Get a free API key at console.anthropic.com →</a></div>
+      <input id="apikey-input" type="password" placeholder="sk-ant-..." style="width:100%;padding:10px 14px;border:1px solid var(--border2);border-radius:var(--radius-sm);font-size:13px;font-family:'DM Sans',sans-serif;background:var(--surface2);color:var(--text);margin-bottom:.75rem"/>
+      <div style="font-size:11px;color:var(--text3);margin-bottom:1.25rem">🔒 Your key is stored only in your browser and never sent anywhere except Anthropic's servers.</div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-primary" style="flex:1" onclick="
+          const k=document.getElementById('apikey-input').value.trim();
+          if(!k||!k.startsWith('sk-')){alert('Please enter a valid API key starting with sk-');return;}
+          setApiKey(k);
+          document.getElementById('apikey-modal').remove();
+          ${onSuccess ? 'window._apiKeyCallback&&window._apiKeyCallback()' : ''}
+        ">Save & Continue</button>
+        <button class="btn btn-ghost" onclick="document.getElementById('apikey-modal').remove()">Cancel</button>
+      </div>
+    </div>`;
+  window._apiKeyCallback=onSuccess||null;
+  document.body.appendChild(overlay);
+}
 let obStep=1;
 const OB_TOTAL=7;
 let editId=null,billFilter='all',analyticsCategory='all';
@@ -3821,7 +3878,7 @@ Generate 5–8 recommendations covering: bill optimisation, home maintenance, in
   try{
     const resp=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',
-      headers:{'Content-Type':'application/json'},
+      headers:apiHeaders(),
       body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2000,messages:[{role:'user',content:prompt}]})
     });
     const data=await resp.json();
@@ -4062,6 +4119,10 @@ function loadProfileForm(){
   const {profile:p}=load();
   const map={name:'p-name',state:'p-state',zip:'p-zip',sqft:'p-sqft',year:'p-year',occupants:'p-occupants',heating:'p-heating',cooling:'p-cooling',wh:'p-wh',solar:'p-solar',type:'p-type',own:'p-own',electricalPanel:'p-elec-panel',plumbing:'p-plumbing',foundation:'p-foundation'};
   Object.entries(map).forEach(([k,id])=>{const el=document.getElementById(id);if(el&&p[k])el.value=p[k];});
+  // Show API key status
+  const statusEl=document.getElementById('profile-apikey-status');
+  if(statusEl) statusEl.textContent=getApiKey()?'✓ API key is set — AI features are enabled':'No API key saved — AI features are disabled';
+  if(statusEl) statusEl.style.color=getApiKey()?'var(--green)':'var(--amber)';
 }
 function saveProfile(){
   const {bills,hist}=load();
@@ -4187,7 +4248,7 @@ async function runAI(type){
   try{
     const resp=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',
-      headers:{'Content-Type':'application/json'},
+      headers:apiHeaders(),
       body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})
     });
     const data=await resp.json();
@@ -4826,7 +4887,7 @@ Numbered, most urgent first. Specific steps the homeowner should take now. Write
   try{
     const resp=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',
-      headers:{'Content-Type':'application/json'},
+      headers:apiHeaders(),
       body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:3000,messages:[{role:'user',content:messageContent}]})
     });
     const data=await resp.json();
@@ -5250,7 +5311,7 @@ async function askDocQ(question){
   try{
     const resp=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',
-      headers:{'Content-Type':'application/json'},
+      headers:apiHeaders(),
       body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:500,messages:[{role:'user',content}]})
     });
     const data=await resp.json();
@@ -6153,7 +6214,7 @@ For autofill: extract only values clearly stated in the report. Leave null if no
     try{
       const resp=await fetch('https://api.anthropic.com/v1/messages',{
         method:'POST',
-        headers:{'Content-Type':'application/json'},
+        headers:apiHeaders(),
         body:JSON.stringify({
           model:'claude-sonnet-4-20250514',
           max_tokens:4000,
@@ -6597,6 +6658,7 @@ function obInspUpload(input){
 async function obInspProcess(file){
   const maxMB=20;
   if(file.size>maxMB*1024*1024){alert('File too large. Please use a PDF or image under 20MB.');return;}
+  if(!getApiKey()){showApiKeyModal(()=>obInspProcess(file));return;}
 
   // Show loading, hide upload zone
   document.getElementById('ob-insp-upload-zone').style.display='none';
@@ -6667,7 +6729,7 @@ For repairItems list EVERY repair need, deficiency, safety concern, or recommend
     try{
       const resp=await fetch('https://api.anthropic.com/v1/messages',{
         method:'POST',
-        headers:{'Content-Type':'application/json'},
+        headers:apiHeaders(),
         body:JSON.stringify({
           model:'claude-sonnet-4-20250514',
           max_tokens:3000,
