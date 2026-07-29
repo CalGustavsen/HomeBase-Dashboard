@@ -178,8 +178,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .profile-field:last-child{margin-bottom:0}
 .profile-field label{display:block;font-size:12px;color:var(--text2);margin-bottom:5px;font-weight:600}
 
-.ai-panel{background:linear-gradient(135deg,rgba(21,101,192,.06),rgba(0,131,143,.04));border:1px solid rgba(21,101,192,.15);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.5rem}
-.ai-panel-header{display:flex;align-items:center;gap:10px;margin-bottom:.75rem}
+.insights-tab{background:transparent;border:none;padding:5px 12px;border-radius:calc(var(--radius-sm) - 2px);font-size:12px;font-weight:500;color:var(--text2);cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif}
+.insights-tab:hover{color:var(--text);background:rgba(255,255,255,.06)}
+.insights-tab.active{background:var(--surface3);color:var(--text);font-weight:600}
+.insights-action-card{display:flex;align-items:flex-start;gap:12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.125rem;cursor:pointer;text-align:left;transition:all .18s;width:100%}
+.insights-action-card:hover{background:var(--surface2);border-color:rgba(100,181,246,.3);transform:translateY(-1px);box-shadow:0 4px 16px rgba(0,0,0,.2)}
+.insights-action-icon{font-size:22px;flex-shrink:0;margin-top:1px}
+.insights-action-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px}
+.insights-action-sub{font-size:12px;color:var(--text2);line-height:1.55}
 .ai-badge{background:linear-gradient(135deg,var(--accent),var(--purple));color:#fff;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:3px 10px;border-radius:20px}
 .ai-response{font-size:13px;color:var(--text2);line-height:1.75;white-space:pre-wrap}
 .dot-pulse{display:flex;gap:4px;align-items:center}
@@ -373,6 +379,35 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .appliance-progress{height:5px;background:var(--surface3);border-radius:4px;overflow:hidden;margin-bottom:.625rem}
 .appliance-progress-fill{height:100%;border-radius:4px;transition:width .3s}
 .appliance-cost-range{font-size:11px;color:var(--text3);text-align:right}
+
+/* Reminder info tooltip */
+.info-tip-icon{display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:50%;background:var(--surface2);color:var(--text3);font-size:10px;font-weight:700;cursor:help;flex-shrink:0;border:1px solid var(--border2);line-height:1;user-select:none}
+.info-tip-icon:hover,.info-tip-icon:focus{background:var(--accent);color:#fff;border-color:var(--accent);outline:none}
+#hb-info-tip{display:none;position:fixed;z-index:1000;max-width:270px;background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-sm);box-shadow:var(--shadow-lg);padding:.75rem .875rem;font-size:12px;color:var(--text2);line-height:1.55}
+#hb-info-tip .info-tip-title{font-weight:600;color:var(--text);margin-bottom:4px;font-size:12.5px}
+#hb-info-tip .info-tip-how{margin-top:6px}
+#hb-info-tip .info-tip-how strong{color:var(--text)}
+
+/* Reminder category groups */
+.reminder-cat-group{margin-bottom:1.75rem}
+.reminder-cat-header{display:flex;align-items:center;gap:8px;padding:.5rem .625rem;margin-bottom:.75rem;border-radius:var(--radius-sm);cursor:pointer;user-select:none;background:var(--surface2)}
+.reminder-cat-header:hover{background:var(--surface3)}
+.reminder-cat-header .cat-icon{font-size:15px}
+.reminder-cat-header .cat-title{font-size:13px;font-weight:600;color:var(--text)}
+.reminder-cat-header .cat-count{font-size:11px;color:var(--text3);font-weight:500}
+.reminder-cat-header .cat-chevron{margin-left:auto;font-size:11px;color:var(--text3);transition:transform .15s}
+.reminder-cat-header.collapsed .cat-chevron{transform:rotate(-90deg)}
+.reminder-cat-body{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem}
+.reminder-cat-body.collapsed{display:none}
+
+/* Toast */
+#reminder-toast-wrap{position:fixed;bottom:24px;right:24px;z-index:2000;display:flex;flex-direction:column;gap:10px}
+.reminder-toast{background:var(--text);color:#fff;border-radius:var(--radius-sm);padding:.75rem 1rem;font-size:12.5px;line-height:1.5;box-shadow:var(--shadow-lg);max-width:320px;display:flex;align-items:flex-start;gap:10px;animation:toastIn .2s ease}
+.reminder-toast .toast-icon{font-size:15px;flex-shrink:0}
+.reminder-toast .toast-actions{display:flex;gap:10px;margin-top:5px}
+.reminder-toast .toast-link{color:#8ecdfb;font-weight:600;cursor:pointer;background:none;border:none;padding:0;font-size:12px;font-family:'DM Sans',sans-serif}
+.reminder-toast .toast-close{margin-left:auto;cursor:pointer;color:rgba(255,255,255,.6);flex-shrink:0}
+@keyframes toastIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
 /* ── Glossary ── */
 .glossary-search-wrap{position:sticky;top:57px;z-index:40;background:var(--bg);padding:.75rem 0 1rem;margin-bottom:.25rem}
@@ -754,20 +789,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     <div class="nav-section">
       <div class="nav-label">Overview</div>
       <div class="nav-item active" onclick="showView('dashboard')"><span class="nav-icon">⊞</span>Dashboard</div>
-      <div class="nav-item" onclick="showView('analytics')"><span class="nav-icon">↗</span>Analytics</div>
-    </div>
-
-    <div class="nav-section">
-      <div class="nav-label">Bills</div>
       <div class="nav-item" onclick="showView('bills')"><span class="nav-icon">≡</span>All Bills <span class="nav-badge" id="overdue-badge" style="display:none">0</span></div>
-      <div class="nav-item" onclick="showView('history')"><span class="nav-icon">◷</span>Payment History</div>
-      <div class="nav-item" onclick="showView('lifestyle')"><span class="nav-icon">✦</span>Lifestyle Bills</div>
     </div>
 
     <div class="nav-section">
       <div class="nav-label">Insights &amp; Tools</div>
-      <div class="nav-item" onclick="showView('recommendations')"><span class="nav-icon">💡</span>Recommendations <span class="nav-badge" id="rec-badge" style="display:none">!</span></div>
-      <div class="nav-item" onclick="showView('aianalysis')"><span class="nav-icon">◈</span>Smart Analysis</div>
+      <div class="nav-item" onclick="showView('insights')"><span class="nav-icon">💡</span>Insights <span class="nav-badge" id="rec-badge" style="display:none">!</span></div>
+      <div class="nav-item" onclick="showView('reminders')"><span class="nav-icon">🔔</span>Reminders <span class="nav-badge" id="reminders-badge" style="display:none">!</span></div>
       <div class="nav-item" onclick="showView('documents')"><span class="nav-icon">📄</span>Document Vault</div>
       <div class="nav-item" onclick="showView('calculators')"><span class="nav-icon">📊</span>Financial Calculators</div>
     </div>
@@ -877,8 +905,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
         <div id="dash-summary-cards" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:1.5rem"></div>
         <!-- visual row: donut + timeline -->
         <div id="dash-visual-row" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:1.5rem;align-items:start"></div>
-        <!-- doc insights -->
-        <!-- bottom section: attention + mini analytics -->
+        <!-- spend trend + category breakdown (merged from analytics) -->
+        <div id="dash-analytics-row" style="margin-bottom:1.5rem"></div>
+        <!-- bottom section: attention + contacts -->
         <div id="dash-bottom"></div>
       </div>
 
@@ -896,17 +925,31 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
       <div id="lifestyle-section-wrap"></div>
     </div>
 
-    <!-- ALL BILLS -->
+    <!-- ALL BILLS (includes payment history and lifestyle via dropdown) -->
     <div id="view-bills" class="view">
-      <div class="filter-row">
-        <button class="filter-chip active" onclick="filterBills('all',this)">All</button>
-        <button class="filter-chip" onclick="filterBills('unpaid',this)">Unpaid</button>
-        <button class="filter-chip" onclick="filterBills('manual',this)">⚠ Manual</button>
-        <button class="filter-chip" onclick="filterBills('autopay',this)">↻ Autopay</button>
-        <button class="filter-chip" onclick="filterBills('paid',this)">Paid</button>
-        <button class="filter-chip" onclick="filterBills('overdue',this)">Overdue</button>
-        <input class="search-box" id="bill-search" placeholder="Search..." oninput="renderBillsTable()"/>
+      <div class="filter-row" style="flex-wrap:wrap;gap:10px">
+        <!-- View switcher dropdown -->
+        <div style="position:relative;flex-shrink:0">
+          <select id="bills-view-select" onchange="switchBillsView(this.value)"
+            style="appearance:none;-webkit-appearance:none;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:6px 32px 6px 12px;font-size:13px;font-weight:600;color:var(--text);cursor:pointer;font-family:inherit">
+            <option value="bills">All Bills</option>
+            <option value="history">Payment History</option>
+          </select>
+          <span style="position:absolute;right:10px;top:50%;transform:translateY(-50%);pointer-events:none;font-size:10px;color:var(--text3)">▼</span>
+        </div>
+        <!-- Filter chips (hidden when history is shown) -->
+        <div id="bills-filter-chips" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+          <button class="filter-chip active" onclick="filterBills('all',this)">All</button>
+          <button class="filter-chip" onclick="filterBills('unpaid',this)">Unpaid</button>
+          <button class="filter-chip" onclick="filterBills('manual',this)">⚠ Manual</button>
+          <button class="filter-chip" onclick="filterBills('autopay',this)">↻ Autopay</button>
+          <button class="filter-chip" onclick="filterBills('overdue',this)">Overdue</button>
+        </div>
+        <input class="search-box" id="bill-search" placeholder="Search..." oninput="renderBillsView()" style="margin-left:auto"/>
       </div>
+      <!-- Dynamic subtitle -->
+      <div id="bills-view-sub" style="font-size:12px;color:var(--text3);margin-bottom:1rem;padding:0 2px">Every bill you owe, tracked and under control.</div>
+      <!-- Content area — bills table or history -->
       <div id="bills-grouped-wrap"></div>
     </div>
 
@@ -915,114 +958,201 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
       <div id="history-wrap"></div>
     </div>
 
-    <!-- RECOMMENDATIONS -->
-    <div id="view-recommendations" class="view">
+    <!-- INSIGHTS (combines Recommendations + Smart Analysis) -->
+    <div id="view-insights" class="view">
 
       <!-- Header -->
-      <div class="section-header" style="margin-bottom:1.25rem">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:.75rem">
         <div>
-          <div class="section-title">💡 Recommendations</div>
-          <div class="section-sub">Personalised to your bills, home profile, and appliances.</div>
+          <div class="section-title">💡 Insights</div>
+          <div class="section-sub">Personalised recommendations and AI analysis for your home.</div>
         </div>
-        <button class="btn btn-primary btn-sm" id="recs-refresh-btn" onclick="runAIRecommendations()">✦ Refresh with AI</button>
-      </div>
-
-      <!-- Summary stat pills -->
-      <div id="recs-stat-pills" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:1.5rem"></div>
-
-      <!-- AI recommendations panel (shown after AI runs) -->
-      <div id="recs-ai-panel" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:1.5rem;overflow:hidden">
-        <div style="background:linear-gradient(135deg,rgba(21,101,192,.07),rgba(0,131,143,.04));padding:.875rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
-          <div style="display:flex;align-items:center;gap:8px">
-            <span class="ai-badge">✦ AI</span>
-            <span style="font-size:13px;font-weight:600;color:var(--text)">Personalised recommendations for your home</span>
+        <div style="display:flex;gap:6px;align-items:center">
+          <div style="display:flex;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:3px;gap:2px">
+            <button id="insights-tab-recs" class="insights-tab active" onclick="switchInsightsTab('recs')">Recommendations</button>
+            <button id="insights-tab-ask" class="insights-tab" onclick="switchInsightsTab('ask')">Ask AI</button>
           </div>
-          <span id="recs-ai-timestamp" style="font-size:11px;color:var(--text3)"></span>
+          <button class="btn btn-primary btn-sm" id="recs-refresh-btn" onclick="runAIRecommendations()" style="white-space:nowrap">✦ Refresh</button>
         </div>
-        <div id="recs-ai-body" style="padding:1.25rem"></div>
       </div>
 
-      <!-- AI loading state -->
-      <div id="recs-ai-loading" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.5rem;text-align:center">
-        <div style="display:flex;align-items:center;justify-content:center;gap:10px;color:var(--text2);font-size:13px;margin-bottom:.375rem">
-          <div class="dot-pulse"><span></span><span></span><span></span></div>
-          Analysing your bills, home profile, and appliances…
+      <!-- RECOMMENDATIONS TAB -->
+      <div id="insights-panel-recs">
+        <!-- Stat pills -->
+        <div id="recs-stat-pills" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:1.5rem"></div>
+
+        <!-- AI panel -->
+        <div id="recs-ai-panel" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:1.5rem;overflow:hidden">
+          <div style="background:linear-gradient(135deg,rgba(21,101,192,.07),rgba(0,131,143,.04));padding:.875rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+            <div style="display:flex;align-items:center;gap:8px">
+              <span class="ai-badge">✦ AI</span>
+              <span style="font-size:13px;font-weight:600;color:var(--text)">Personalised recommendations for your home</span>
+            </div>
+            <span id="recs-ai-timestamp" style="font-size:11px;color:var(--text3)"></span>
+          </div>
+          <div id="recs-ai-body" style="padding:1.25rem"></div>
         </div>
-        <div style="font-size:11px;color:var(--text3)">Usually takes 10–15 seconds</div>
+
+        <!-- AI loading -->
+        <div id="recs-ai-loading" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.5rem;text-align:center">
+          <div style="display:flex;align-items:center;justify-content:center;gap:10px;color:var(--text2);font-size:13px;margin-bottom:.375rem">
+            <div class="dot-pulse"><span></span><span></span><span></span></div>
+            Analysing your bills, home profile, and appliances…
+          </div>
+          <div style="font-size:11px;color:var(--text3)">Usually takes 10–15 seconds</div>
+        </div>
+
+        <!-- Rule-based recs -->
+        <div id="all-recs-wrap"></div>
       </div>
 
-      <!-- Rule-based recommendations (always shown) -->
-      <div id="all-recs-wrap"></div>
+      <!-- ASK AI TAB -->
+      <div id="insights-panel-ask" style="display:none">
+
+        <!-- Action cards row -->
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:1.5rem">
+          <button class="insights-action-card" onclick="runAI('full')">
+            <span class="insights-action-icon">🔍</span>
+            <div>
+              <div class="insights-action-title">Analyze All My Bills</div>
+              <div class="insights-action-sub">Which bills look high, red flags, and the 3 most impactful changes you can make</div>
+            </div>
+          </button>
+          <button class="insights-action-card" onclick="runAI('savings')">
+            <span class="insights-action-icon">💰</span>
+            <div>
+              <div class="insights-action-title">Find Biggest Savings</div>
+              <div class="insights-action-sub">Every realistic savings opportunity ranked by monthly dollar impact</div>
+            </div>
+          </button>
+          <button class="insights-action-card" onclick="runAI('negotiate')">
+            <span class="insights-action-icon">📞</span>
+            <div>
+              <div class="insights-action-title">Negotiation Guide</div>
+              <div class="insights-action-sub">Scripts and tactics for calling your internet, insurance, and other providers</div>
+            </div>
+          </button>
+          <button class="insights-action-card" onclick="runAI('insurance')">
+            <span class="insights-action-icon">🛡</span>
+            <div>
+              <div class="insights-action-title">Insurance Review</div>
+              <div class="insights-action-sub">Is your premium reasonable? Discounts to ask for, bundling options, coverage gaps</div>
+            </div>
+          </button>
+        </div>
+
+        <!-- Custom question -->
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;margin-bottom:1.25rem">
+          <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:.25rem">💬 Ask a custom question</div>
+          <div style="font-size:12px;color:var(--text3);margin-bottom:.875rem">Ask anything about your bills, home costs, or how to save money.</div>
+          <div style="display:flex;gap:10px">
+            <input class="form-input" id="ai-custom-input" style="flex:1" placeholder="e.g. Is my electricity bill too high for a 2,000 sq ft home in Idaho?"/>
+            <button class="btn btn-primary" onclick="runAI('custom')">Ask</button>
+          </div>
+          <!-- Example prompts -->
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:.75rem">
+            <button class="filter-chip" style="font-size:11px" onclick="document.getElementById('ai-custom-input').value=this.textContent;runAI('custom')">Should I refinance?</button>
+            <button class="filter-chip" style="font-size:11px" onclick="document.getElementById('ai-custom-input').value=this.textContent;runAI('custom')">Am I overpaying for insurance?</button>
+            <button class="filter-chip" style="font-size:11px" onclick="document.getElementById('ai-custom-input').value=this.textContent;runAI('custom')">How do I lower my electric bill?</button>
+            <button class="filter-chip" style="font-size:11px" onclick="document.getElementById('ai-custom-input').value=this.textContent;runAI('custom')">What should I budget for repairs?</button>
+          </div>
+        </div>
+
+        <!-- Response card -->
+        <div id="ai-response-card" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden">
+          <div style="background:linear-gradient(135deg,rgba(21,101,192,.07),rgba(0,131,143,.04));padding:.875rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+            <div style="display:flex;align-items:center;gap:8px">
+              <span class="ai-badge">✦ AI</span>
+              <span style="font-size:13px;font-weight:600;color:var(--text)" id="ai-resp-title">Analysis</span>
+            </div>
+            <button class="btn btn-ghost btn-sm" onclick="document.getElementById('ai-response-card').style.display='none'">✕</button>
+          </div>
+          <div id="ai-resp-body" style="padding:1.25rem"></div>
+        </div>
+
+      </div>
 
       <p style="font-size:11px;color:var(--text3);text-align:center;margin-top:1.5rem">Recommendations are informational — not financial advice. Always verify with a licensed professional.</p>
     </div>
 
-    <!-- AI ANALYSIS -->
-    <div id="view-aianalysis" class="view">
-      <div class="ai-panel">
-        <div class="ai-panel-header"><span class="ai-badge">✦ Insights</span><span style="font-size:14px;font-weight:500">Personalized Bill Analysis</span></div>
-        <p style="font-size:13px;color:var(--text2);margin-bottom:1.25rem;line-height:1.65">Get personalized, actionable advice based on your specific bills and home profile — like having a financial advisor who knows your home.</p>
-        <div style="display:flex;gap:10px;flex-wrap:wrap">
-          <button class="btn btn-primary" onclick="runAI('full')">🔍 Analyze All My Bills</button>
-          <button class="btn btn-ghost" onclick="runAI('savings')">💰 Find Biggest Savings</button>
-          <button class="btn btn-ghost" onclick="runAI('negotiate')">📞 Negotiation Guide</button>
-          <button class="btn btn-ghost" onclick="runAI('insurance')">🛡 Insurance Review</button>
+
+    <!-- REMINDERS -->
+    <div id="view-reminders" class="view">
+      <div class="section-header">
+        <div><div class="section-title">🔔 Maintenance Reminders</div><div class="section-sub">Recurring upkeep, tracked so nothing slips through the cracks</div></div>
+        <button class="btn btn-primary btn-sm" onclick="openAddReminder()">+ Add Reminder</button>
+      </div>
+
+      <div id="reminders-stat-pills" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:1.5rem"></div>
+
+      <div style="display:flex;gap:8px;margin-bottom:1.25rem;flex-wrap:wrap" id="reminders-filter-row">
+        <button class="btn btn-ghost btn-sm reminders-filter-btn active" data-filter="all" onclick="setReminderFilter('all',this)">All</button>
+        <button class="btn btn-ghost btn-sm reminders-filter-btn" data-filter="overdue" onclick="setReminderFilter('overdue',this)">Overdue</button>
+        <button class="btn btn-ghost btn-sm reminders-filter-btn" data-filter="soon" onclick="setReminderFilter('soon',this)">Due soon</button>
+        <button class="btn btn-ghost btn-sm reminders-filter-btn" data-filter="new" onclick="setReminderFilter('new',this)">Not logged yet</button>
+        <button class="btn btn-ghost btn-sm reminders-filter-btn" data-filter="good" onclick="setReminderFilter('good',this)">On track</button>
+      </div>
+
+      <div id="reminders-grid" style="display:block"></div>
+      <div id="reminders-empty" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:3rem;text-align:center">
+        <div style="font-size:36px;margin-bottom:1rem">🔔</div>
+        <div style="font-size:15px;font-weight:500;margin-bottom:.5rem">No reminders match this filter</div>
+        <div style="font-size:13px;color:var(--text2)">Try a different filter, or add a new reminder.</div>
+      </div>
+
+      <p style="font-size:11px;color:var(--text3);text-align:center;margin-top:1.5rem">Suggested frequencies are general guidance — always follow manufacturer recommendations where available.</p>
+
+      <!-- Add/Edit Reminder Modal -->
+      <div class="modal-overlay" id="reminder-modal">
+        <div class="modal" style="max-width:460px">
+          <div class="modal-header">
+            <div class="modal-title" id="reminder-modal-title">Add Reminder</div>
+            <button class="modal-close" onclick="closeReminderModal()">✕</button>
+          </div>
+          <div class="form-grid">
+            <div class="form-row full">
+              <label class="form-label">Task name</label>
+              <input class="form-input" id="rem-name" placeholder="e.g. Replace HVAC filter" style="width:100%"/>
+            </div>
+            <div class="form-row full">
+              <label class="form-label">Category</label>
+              <select class="form-select" id="rem-category" style="width:100%">
+                <option value="safety">🛟 Safety</option>
+                <option value="hvac">❄️ HVAC & Air</option>
+                <option value="plumbing">🚿 Plumbing & Water</option>
+                <option value="exterior">🏠 Exterior & Structural</option>
+                <option value="appliances">🧺 Appliances</option>
+                <option value="other">🔧 Other</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label class="form-label">Repeat every</label>
+              <input class="form-input" id="rem-freq-value" type="number" min="1" value="3" style="width:100%"/>
+            </div>
+            <div class="form-row">
+              <label class="form-label">&nbsp;</label>
+              <select class="form-select" id="rem-freq-unit" style="width:100%">
+                <option value="months">Months</option>
+                <option value="years">Years</option>
+              </select>
+            </div>
+            <div class="form-row full">
+              <label class="form-label">Last completed <span style="color:var(--text3);font-weight:400">(optional)</span></label>
+              <input class="form-input" id="rem-last-completed" type="date" style="width:100%"/>
+            </div>
+            <div class="form-row full">
+              <label class="form-label">Notes <span style="color:var(--text3);font-weight:400">(optional)</span></label>
+              <input class="form-input" id="rem-notes" placeholder="e.g. Filter size 16x25x1" style="width:100%"/>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-ghost" onclick="closeReminderModal()">Cancel</button>
+            <button class="btn btn-primary" onclick="saveReminderModal()">Save</button>
+          </div>
         </div>
       </div>
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;margin-bottom:1rem">
-        <div style="font-size:13px;font-weight:500;margin-bottom:.75rem">💬 Ask a custom question</div>
-        <div style="display:flex;gap:10px">
-          <input class="form-input" id="ai-custom-input" style="flex:1" placeholder="e.g. Is my electricity bill too high for a 2,000 sq ft home in Idaho?"/>
-          <button class="btn btn-primary" onclick="runAI('custom')">Ask</button>
-        </div>
-      </div>
-      <div id="ai-response-card" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
-          <div style="display:flex;align-items:center;gap:8px"><span class="ai-badge">✦ Insights</span><span style="font-size:14px;font-weight:500" id="ai-resp-title">Analysis</span></div>
-          <button class="btn btn-ghost btn-sm" onclick="this.closest('#ai-response-card').style.display='none'">✕</button>
-        </div>
-        <div id="ai-resp-body"></div>
-      </div>
-      <p style="font-size:11px;color:var(--text3);text-align:center;margin-top:1rem">Recommendations are informational, not financial advice. Always verify with a licensed professional.</p>
     </div>
 
-    <!-- ANALYTICS -->
-    <div id="view-analytics" class="view">
-      <!-- Monthly spend chart with filter -->
-      <div class="chart-wrap">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;flex-wrap:wrap;gap:.5rem">
-          <div class="chart-title" style="margin-bottom:0">Monthly Spend</div>
-          <div id="analytics-filter-chips" style="display:flex;gap:6px;flex-wrap:wrap"></div>
-        </div>
-        <div id="analytics-avg-line-label" style="font-size:11px;color:var(--text3);margin-bottom:.5rem"></div>
-        <div style="position:relative">
-          <div class="bar-chart" id="monthly-chart" style="height:160px"></div>
-          <div id="monthly-chart-avg-line" style="position:absolute;left:0;right:0;pointer-events:none"></div>
-        </div>
-        <div style="display:flex;justify-content:space-between;margin-top:8px" id="monthly-labels"></div>
-      </div>
-
-      <!-- MoM change callout -->
-      <div id="analytics-mom-callout"></div>
-
-      <!-- Category breakdown + Annual projection -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem">
-        <div class="chart-wrap" style="margin-bottom:0">
-          <div class="chart-title">Spend by Category</div>
-          <div class="cat-breakdown" id="cat-breakdown"></div>
-        </div>
-        <div class="chart-wrap" style="margin-bottom:0">
-          <div class="chart-title">Annual Projection</div>
-          <div id="annual-proj"></div>
-        </div>
-      </div>
-
-      <!-- Utility breakdown -->
-      <div class="chart-wrap" id="utility-breakdown-wrap">
-        <div class="chart-title">Utility Breakdown</div>
-        <div id="utility-breakdown"></div>
-      </div>
-    </div>
 
     <!-- DOCUMENT VAULT -->
     <div id="view-documents" class="view">
@@ -1165,7 +1295,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem">
           <div>
             <div style="font-size:15px;font-weight:600;color:var(--text)">Lifespan Timeline</div>
-            <div style="font-size:12px;color:var(--text3);margin-top:2px">Each bar shows how far through its expected lifespan your appliance is</div>
+            <div style="font-size:12px;color:var(--text3);margin-top:2px">Each bar shows how far through its expected lifespan your appliance is, with years remaining adjusted for logged maintenance</div>
           </div>
           <div style="display:flex;gap:12px;align-items:center;font-size:11px;color:var(--text3)">
             <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:2px;background:var(--green);display:inline-block"></span>Good</span>
@@ -1274,13 +1404,26 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
               <option value="poor">Poor — needs attention</option>
             </select>
           </div>
-          <div class="form-row">
-            <label class="form-label">Last serviced</label>
-            <input class="form-input" id="ap-serviced" type="number" placeholder="Year (e.g. 2023)" style="width:100%"/>
-          </div>
           <div class="form-row full">
             <label class="form-label">Notes <span style="color:var(--text3);font-weight:400">(optional)</span></label>
             <input class="form-input" id="ap-notes" placeholder="e.g. Had it serviced last fall, no issues" style="width:100%"/>
+          </div>
+          <div class="form-row full">
+            <label class="form-label">Maintenance &amp; repair log <span style="color:var(--text3);font-weight:400">(used to refine the years-remaining estimate)</span></label>
+            <div id="ap-service-log-list" style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px"></div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+              <input class="form-input" id="ap-log-year" type="number" placeholder="Year" style="width:80px"/>
+              <select class="form-select" id="ap-log-type" style="flex:1;min-width:170px">
+                <option value="routine">🔧 Routine maintenance / tune-up</option>
+                <option value="minor_repair">🛠️ Minor repair</option>
+                <option value="major_repair">⚙️ Major repair</option>
+                <option value="component">🔩 Major component replaced</option>
+                <option value="resurfaced">🏗️ Resurfaced / recoated</option>
+                <option value="inspection">🔍 Inspected — no work done</option>
+              </select>
+              <input class="form-input" id="ap-log-note" placeholder="Note (optional)" style="flex:1;min-width:140px"/>
+              <button type="button" class="btn btn-ghost btn-sm" onclick="addServiceLogEntry()">+ Add</button>
+            </div>
           </div>
         </div>
         <div id="ap-lifespan-hint" style="display:none;margin-top:1rem;background:var(--accent-bg);border:1px solid var(--accent-border);border-radius:var(--radius-sm);padding:.75rem 1rem;font-size:12px;color:var(--text2)"></div>
@@ -1471,7 +1614,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
           <span class="why-card-icon">💰</span>
           <div class="why-card-title">See the true cost of your home</div>
           <div class="why-card-text">HomeBase tracks every real expense — utilities, insurance, maintenance, subscriptions — and shows where money is quietly leaking. <strong>Most homeowners overspend simply by never looking.</strong> A single internet negotiation often saves $200+ a year. HomeBase surfaces these moments automatically.</div>
-          <button class="why-card-link" onclick="showView('recommendations')">View your savings opportunities →</button>
+          <button class="why-card-link" onclick="showView('insights')">View your savings opportunities →</button>
         </div>
 
         <div class="why-card c-amber">
@@ -1498,7 +1641,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
         <div class="why-card c-purple">
           <span class="why-card-icon">📊</span>
           <div class="why-card-title">A Home Health Score that actually means something</div>
-          <div class="why-card-text">Unlike a vague "wellness score," HomeBase's Home Health Score is built on <strong>four real pillars</strong>: bill efficiency, payment reliability, home preparedness, and profile completeness. It updates in real time as you add data — and tells you exactly which pillar to focus on and why.</div>
+          <div class="why-card-text">Unlike a vague "wellness score," HomeBase's Home Health Score is built on <strong>three real pillars</strong>: financial health, payment reliability, and home preparedness. Profile completeness is shown separately — it never penalizes you just for being new. The score updates in real time and always starts positive.</div>
           <button class="why-card-link" onclick="showView('dashboard')">Check your score →</button>
         </div>
 
@@ -1506,7 +1649,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
           <span class="why-card-icon">🔍</span>
           <div class="why-card-title">Smart insights without the financial advisor fees</div>
           <div class="why-card-text">HomeBase analyzes your bills against state averages, flags high rates, recommends when to refinance, and identifies negotiation opportunities — all without charging you by the hour. <strong>The Recommendations tab gives you specific, actionable steps</strong> tailored to your home and your state.</div>
-          <button class="why-card-link" onclick="showView('aianalysis')">Try Smart Insights →</button>
+          <button class="why-card-link" onclick="showView('insights')">Try Smart Insights →</button>
         </div>
 
       </div>
@@ -1704,7 +1847,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
       </div>
       <div style="display:flex;gap:10px;margin-top:1.5rem">
         <button class="btn btn-primary" onclick="saveProfile()">Save Profile</button>
-        <button class="btn btn-ghost" onclick="showView('recommendations');renderRecommendations()">Re-run Recommendations</button>
+        <button class="btn btn-ghost" onclick="showView('insights');renderRecommendations()">Re-run Recommendations</button>
         <button class="btn btn-ghost" style="margin-left:auto;font-size:12px;color:var(--text3)" onclick="obReset()">⟳ Restart setup wizard</button>
       </div>
 
@@ -1839,7 +1982,7 @@ function showApiKeyModal(onSuccess){
   document.body.appendChild(overlay);
 }
 let obStep=1;
-const OB_TOTAL=7;
+const OB_TOTAL=6;
 let editId=null,billFilter='all',analyticsCategory='all';
 
 const CAT_ICONS={'Electricity':'⚡','Natural Gas':'🔥','Water & Sewer':'💧','Trash / Recycling':'🗑️','Utilities':'⚡','Mortgage / Rent':'🏦','Insurance':'🛡️','Taxes':'📋','Internet / Cable':'🌐','HOA':'🏘️','Warranty':'🔧','Subscriptions':'📱','Phone':'📞','Other':'🔩'};
@@ -1882,14 +2025,11 @@ function defaultHist(){return[];}
 const VIEW_TITLES={
   dashboard:'Dashboard',
   bills:'All Bills',
-  history:'Payment History',
-  recommendations:'Recommendations',
-  aianalysis:'Smart Analysis',
-  analytics:'Analytics',
+  insights:'Insights',
+  reminders:'Reminders',
   profile:'Home Profile',
   documents:'Document Vault',
   calculators:'Financial Calculators',
-  lifestyle:'Lifestyle Bills',
   repairs:'Home Systems & Appliances',
   inspection:'Inspection Report',
   why:'Why HomeBase?',
@@ -1902,7 +2042,8 @@ const VIEW_SUBTITLES={
   dashboard:"Your home's true cost, finally in one place.",
   bills:"Every bill you owe, tracked and under control.",
   history:"A paper trail you'll actually be glad exists.",
-  recommendations:"Small changes. Real savings. No guesswork.",
+  insights:'Personalised recommendations and AI analysis for your home.',
+  reminders:"Recurring home maintenance, tracked so nothing slips through the cracks.",
   aianalysis:"Like a financial advisor who knows your home — and won't charge by the hour.",
   analytics:"The numbers behind your home. Spend smarter, not harder.",
   profile:"Tell us about your home so we can look out for it.",
@@ -1926,10 +2067,20 @@ function showView(v){
   if(subtitleEl) subtitleEl.textContent=VIEW_SUBTITLES[v]||'';
   document.querySelectorAll('.nav-item,.nav-item-sub').forEach(el=>{if((el.getAttribute('onclick')||'').includes("'"+v+"'"))el.classList.add('active');});
   if(v==='dashboard')renderDashboard();
-  if(v==='bills')renderBillsTable();
-  if(v==='history')renderHistory();
-  if(v==='recommendations')renderRecommendations();
-  if(v==='analytics')renderAnalytics();
+  if(v==='bills'){renderBillsView();}
+  if(v==='history'){
+    // redirect to bills view with history mode
+    const sel=document.getElementById('bills-view-select');
+    if(sel){sel.value='history';switchBillsView('history');}
+    v='bills';
+    document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+    document.querySelector('.nav-item[onclick*="bills"]')?.classList.add('active');
+    document.querySelectorAll('.view').forEach(vw=>vw.classList.remove('active'));
+    document.getElementById('view-bills')?.classList.add('active');
+    return;
+  }
+  if(v==='insights'){renderRecommendations();}
+  if(v==='reminders'){renderReminders();}
   if(v==='profile')loadProfileForm();
   if(v==='documents')renderDocVault();
   if(v==='calculators')renderCalcView();
@@ -2210,12 +2361,17 @@ function recHTML(r){
   </div>`;
 }
 
-// ── Home Health Score — 4-pillar model ───────────────────────────────────────
-// Pillar 1: Bill Efficiency     40 pts  (essential bills only vs benchmarks)
-// Pillar 2: Payment Reliability 25 pts  (overdue, unpaid essentials, autopay)
-// Pillar 3: Home Preparedness   25 pts  (appliance ages, doc vault coverage)
-// Pillar 4: Profile Completeness 10 pts (location, home details filled in)
+// ── Home Health Score — 3-pillar model ───────────────────────────────────────
+// Pillar 1: Financial Health    45 pts  (bills vs benchmarks, insurance)
+// Pillar 2: Payment Reliability 35 pts  (overdue, autopay, payment habits)
+// Pillar 3: Home Preparedness   20 pts  (appliance tracking, key docs)
 // Total: 100 pts
+//
+// Design principles:
+// - Profile completeness is NOT part of the score — shown as separate Setup Progress
+// - Deductions only fire when user has entered relevant data (no penalties for blank fields)
+// - Mortgage rate is informational only — not penalized (market conditions, not behavior)
+// - Floor of 55 so new users never feel punished just for signing up
 
 function calcHomeHealthScore(){
   const {bills,hist,profile}=load();
@@ -2227,117 +2383,102 @@ function calcHomeHealthScore(){
   const monthly=bills.filter(b=>b.freq==='Monthly');
   const essentialMonthly=monthly.filter(b=>ESSENTIAL_CATS.has(b.cat));
   const state=profile.state||'';
-  const issues=[];   // collects penalty reasons for display
+  const issues=[];
+  const wins=[];
+  const hasBills=bills.length>0;
 
-  // ── PILLAR 1: Bill Efficiency (40 pts) ────────────────────────────────────
-  // Start at 40, deduct for essential bills above benchmarks
-  let p1=40;
+  // ── PILLAR 1: Financial Health (45 pts) ──────────────────────────────────
+  let p1=45;
 
-  // Electric vs state avg
-  const elec=essential.find(b=>/electric/i.test(b.name)||b.cat==='Electricity'||b.cat==='Utilities'&&/electric/i.test(b.name));
+  const elec=essential.find(b=>/electric/i.test(b.name)||b.cat==='Electricity'||(b.cat==='Utilities'&&/electric/i.test(b.name)));
   if(elec){
     const avg=STATE_ELEC[state]||110;
     const over=(elec.amount-avg)/avg;
-    if(over>0.30){p1-=10;issues.push({pillar:1,text:`Electric bill is ${Math.round(over*100)}% above ${state||'national'} average`,sev:'high'});}
-    else if(over>0.15){p1-=5;issues.push({pillar:1,text:`Electric bill is slightly above the ${state||'national'} average`,sev:'med'});}
+    if(over>0.30){p1-=12;issues.push({pillar:1,text:`Electric bill is ${Math.round(over*100)}% above the ${state||'national'} average — worth investigating`,sev:'high'});}
+    else if(over>0.15){p1-=6;issues.push({pillar:1,text:`Electric bill is slightly above the ${state||'national'} average`,sev:'med'});}
+    else{wins.push('Electric bill is at or below the state average');}
   }
 
-  // Mortgage rate
+  const hasInsurance=essential.some(b=>b.cat==='Insurance');
+  if(hasBills&&!hasInsurance){
+    p1-=10;
+    issues.push({pillar:1,text:'No home insurance bill found — add it to track coverage and unlock insurance insights',sev:'high'});
+  } else if(hasInsurance){
+    wins.push('Home insurance is tracked');
+  }
+
+  const inet=essential.find(b=>b.cat==='Internet / Cable');
+  if(inet&&inet.amount>100){p1-=6;issues.push({pillar:1,text:`Internet at ${$$(inet.amount)}/mo — most providers will lower this if you call and ask`,sev:'med'});}
+  else if(inet&&inet.amount>75){p1-=3;issues.push({pillar:1,text:`Internet at ${$$(inet.amount)}/mo — worth comparing rates at renewal`,sev:'low'});}
+  else if(inet){wins.push('Internet bill is at a competitive rate');}
+
+  // Mortgage rate — informational nudge only, not a score penalty
   const mort=essential.find(b=>b.cat==='Mortgage / Rent');
   if(mort&&mort.plan){
     const r=mort.plan.match(/([\d.]+)%/);
     if(r){
       const rate=parseFloat(r[1]);
-      if(rate>7.5){p1-=10;issues.push({pillar:1,text:`Mortgage rate ${rate}% is high — worth monitoring for refinance opportunities`,sev:'high'});}
-      else if(rate>6.5){p1-=5;issues.push({pillar:1,text:`Mortgage rate ${rate}% — set a rate alert for when refinancing makes sense`,sev:'med'});}
+      if(rate>7.5){issues.push({pillar:1,text:`Mortgage at ${rate}% — set a rate alert for when refinancing could save money`,sev:'info'});}
+      else if(rate>6.5){issues.push({pillar:1,text:`Mortgage at ${rate}% — worth keeping an eye on refinance opportunities`,sev:'info'});}
     }
   }
 
-  // No insurance on record
-  const hasInsurance=essential.some(b=>b.cat==='Insurance');
-  if(!hasInsurance){p1-=12;issues.push({pillar:1,text:'No home insurance bill found — make sure coverage is in place',sev:'high'});}
-
-  // Internet over $90
-  const inet=essential.find(b=>b.cat==='Internet / Cable');
-  if(inet&&inet.amount>90){p1-=5;issues.push({pillar:1,text:`Internet at ${$$(inet.amount)}/mo — most providers will lower this if you call`,sev:'med'});}
-  else if(inet&&inet.amount>65){p1-=2;}
-
-  // Property tax — good to have on record
-  const hasTax=essential.some(b=>b.cat==='Taxes');
-  if(!hasTax&&profile.state){p1-=3;issues.push({pillar:1,text:'No property tax bill tracked — add it to get a complete picture',sev:'low'});}
-
   p1=Math.max(0,p1);
 
-  // ── PILLAR 2: Payment Reliability (25 pts) ────────────────────────────────
-  let p2=25;
+  // ── PILLAR 2: Payment Reliability (35 pts) ───────────────────────────────
+  let p2=35;
 
-  // Overdue essential bills
   const overdueEssential=essentialMonthly.filter(b=>getStatus(b,hist)==='overdue');
-  if(overdueEssential.length>=3){p2-=15;issues.push({pillar:2,text:`${overdueEssential.length} essential bills are overdue`,sev:'high'});}
-  else if(overdueEssential.length===2){p2-=10;issues.push({pillar:2,text:'2 essential bills are overdue',sev:'high'});}
-  else if(overdueEssential.length===1){p2-=6;issues.push({pillar:2,text:`${overdueEssential[0].name} is overdue`,sev:'high'});}
+  if(overdueEssential.length>=3){p2-=20;issues.push({pillar:2,text:`${overdueEssential.length} essential bills are overdue`,sev:'high'});}
+  else if(overdueEssential.length===2){p2-=14;issues.push({pillar:2,text:'2 essential bills are overdue',sev:'high'});}
+  else if(overdueEssential.length===1){p2-=8;issues.push({pillar:2,text:`${overdueEssential[0].name} is overdue`,sev:'high'});}
+  else if(essentialMonthly.length>0){wins.push('All essential bills are current — no overdue items');}
 
-  // Unpaid (not yet overdue but manual-pay) essential bills
-  const unpaidManualEssential=essentialMonthly.filter(b=>!b.autopay&&getStatus(b,hist)==='upcoming'||!b.autopay&&getStatus(b,hist)==='soon');
-  if(unpaidManualEssential.length>=3){p2-=6;issues.push({pillar:2,text:`${unpaidManualEssential.length} essential bills require manual payment this month`,sev:'med'});}
-  else if(unpaidManualEssential.length>=1){p2-=3;}
-
-  // Autopay coverage on essential bills
   const autopayEssential=essentialMonthly.filter(b=>b.autopay).length;
   const autopayPct=essentialMonthly.length>0?autopayEssential/essentialMonthly.length:1;
-  if(autopayPct<0.4){p2-=6;issues.push({pillar:2,text:'Less than 40% of essential bills are on autopay — manual payments risk missed due dates',sev:'med'});}
-  else if(autopayPct<0.7){p2-=3;issues.push({pillar:2,text:'Consider setting more essential bills to autopay',sev:'low'});}
+  if(essentialMonthly.length>0){
+    if(autopayPct<0.4){p2-=8;issues.push({pillar:2,text:'Most essential bills are on manual pay — autopay helps prevent missed due dates',sev:'med'});}
+    else if(autopayPct<0.7){p2-=4;issues.push({pillar:2,text:'Consider setting more essential bills to autopay',sev:'low'});}
+    else{wins.push(`${Math.round(autopayPct*100)}% of essential bills are on autopay`);}
+  }
+
+  const unpaidManualEssential=essentialMonthly.filter(b=>!b.autopay&&(getStatus(b,hist)==='upcoming'||getStatus(b,hist)==='soon'));
+  if(unpaidManualEssential.length>=3){p2-=5;issues.push({pillar:2,text:`${unpaidManualEssential.length} manual bills need payment soon`,sev:'med'});}
 
   p2=Math.max(0,p2);
 
-  // ── PILLAR 3: Home Preparedness (25 pts) ──────────────────────────────────
-  let p3=25;
+  // ── PILLAR 3: Home Preparedness (20 pts) ─────────────────────────────────
+  let p3=20;
 
-  // Appliance health — check for appliances past or near end of life
-  if(appliances.length===0){
-    p3-=8;
-    issues.push({pillar:3,text:'No appliances tracked — add them in Potential Repairs to monitor home health',sev:'med'});
-  } else {
+  if(appliances.length>0){
     const overdueAppliances=appliances.filter(ap=>getApplianceStatus(ap).status==='overdue');
     const soonAppliances=appliances.filter(ap=>getApplianceStatus(ap).status==='soon');
-    if(overdueAppliances.length>=2){p3-=10;issues.push({pillar:3,text:`${overdueAppliances.length} appliances are past their expected lifespan`,sev:'high'});}
+    if(overdueAppliances.length>=2){p3-=10;issues.push({pillar:3,text:`${overdueAppliances.length} appliances are past their expected lifespan — budget for replacements`,sev:'high'});}
     else if(overdueAppliances.length===1){p3-=6;issues.push({pillar:3,text:`${overdueAppliances[0].name||'An appliance'} is past its expected lifespan`,sev:'high'});}
-    if(soonAppliances.length>=2){p3-=5;issues.push({pillar:3,text:`${soonAppliances.length} appliances are nearing end of life`,sev:'med'});}
+    if(soonAppliances.length>=2){p3-=5;issues.push({pillar:3,text:`${soonAppliances.length} appliances are approaching end of life — good time to start planning`,sev:'med'});}
     else if(soonAppliances.length===1){p3-=3;issues.push({pillar:3,text:`${soonAppliances[0].name||'An appliance'} is nearing end of life`,sev:'med'});}
+    if(!overdueAppliances.length&&!soonAppliances.length){wins.push('All tracked appliances are within expected lifespan');}
   }
 
-  // Document vault — key documents on file
   const hasMortgageDoc=docs.some(d=>d.type==='mortgage');
   const hasInsuranceDoc=docs.some(d=>d.type==='insurance');
-  const hasWarrantyDoc=docs.some(d=>d.type==='warranty');
-  if(!hasMortgageDoc&&mort){p3-=4;issues.push({pillar:3,text:'Mortgage document not uploaded — upload it to unlock payoff insights',sev:'low'});}
-  if(!hasInsuranceDoc&&hasInsurance){p3-=4;issues.push({pillar:3,text:'Home insurance policy not uploaded — upload it to check for coverage gaps',sev:'low'});}
-  if(!hasWarrantyDoc){p3-=2;}
+  if(hasMortgageDoc)wins.push('Mortgage document on file');
+  if(hasInsuranceDoc)wins.push('Insurance policy on file');
 
   p3=Math.max(0,p3);
 
-  // ── PILLAR 4: Profile Completeness (10 pts) ───────────────────────────────
-  let p4=0;
-  if(profile.state)   p4+=2;
-  if(profile.zip)     p4+=2;
-  if(profile.sqft)    p4+=2;
-  if(profile.year)    p4+=1;
-  if(profile.heating) p4+=1;
-  if(profile.cooling) p4+=1;
-  if(profile.wh)      p4+=1;
-  if(p4<8&&!issues.some(i=>i.pillar===4)){
-    issues.push({pillar:4,text:'Complete your Home Profile to improve score accuracy and recommendations',sev:'low'});
-  }
+  // ── Profile completeness — separate indicator, not part of score ──────────
+  const profileFields=[profile.state,profile.zip,profile.sqft,profile.year,profile.heating,profile.cooling,profile.wh,profile.type];
+  const profilePct=Math.round((profileFields.filter(Boolean).length/profileFields.length)*100);
 
   // ── Total ─────────────────────────────────────────────────────────────────
-  const total=Math.round(Math.min(100,Math.max(20,p1+p2+p3+p4)));
+  const total=Math.round(Math.min(100,Math.max(55,p1+p2+p3)));
 
-  // Savings potential from recs (essential-only)
   const recs=genRecs();
-  const essentialRecs=recs.filter(r=>!['📺'].includes(r.icon)); // exclude streaming rec
+  const essentialRecs=recs.filter(r=>!['📺'].includes(r.icon));
   const pot=essentialRecs.reduce((a,r)=>a+(r.savings||0),0);
 
-  return{total,p1,p2,p3,p4,issues,pot,recs:essentialRecs};
+  return{total,p1,p2,p3,profilePct,issues,wins,pot,recs:essentialRecs};
 }
 
 function renderDashboard(){
@@ -2386,15 +2527,16 @@ function renderDashboard(){
 
   // ── Score calc ──
   const scoreData=calcHomeHealthScore();
-  const {total:score,p1,p2,p3,p4,issues,pot,recs}=scoreData;
+  const {total:score,p1,p2,p3,profilePct,issues,wins,pot,recs}=scoreData;
   const highRecs=recs.filter(r=>r.priority==='high').length;
-  const scoreConfig=score>=85
-    ?{word:'Excellent',sub:'Your home finances are in great shape — all four pillars are healthy.',color:'#4ade80',trackColor:'rgba(74,222,128,.25)'}
-    :score>=70
-    ?{word:'Good Standing',sub:`${issues.filter(i=>i.sev==='high'||i.sev==='med').length} area${issues.filter(i=>i.sev!=='low').length!==1?'s':''} to address${pot>0?` — up to ${$$(pot)}/mo in potential savings`:''}. A few tweaks could push you higher.`,color:'#fbbf24',trackColor:'rgba(251,191,36,.25)'}
-    :score>=50
-    ?{word:'Needs Attention',sub:`${issues.filter(i=>i.sev==='high').length} high-priority issue${issues.filter(i=>i.sev==='high').length!==1?'s':''} found.${pot>0?` Addressing these could save up to ${$$(pot)}/mo.`:''}`,color:'#fb923c',trackColor:'rgba(251,146,60,.25)'}
-    :{word:'Action Required',sub:`Your home health score needs work. ${pot>0?`You could save up to ${$$(pot)}/mo by addressing the issues below.`:'Start by completing your home profile.'}`,color:'#f87171',trackColor:'rgba(248,113,113,.25)'};
+  const actionableIssues=issues.filter(i=>i.sev==='high'||i.sev==='med');
+  const scoreConfig=score>=90
+    ?{word:'Excellent',sub:`Your home finances are in great shape.${wins.length?` ${wins[0]}.`:''}`,color:'#4ade80',trackColor:'rgba(74,222,128,.25)'}
+    :score>=78
+    ?{word:'On Track',sub:`You're managing your home finances well.${actionableIssues.length?` ${actionableIssues.length} opportunity${actionableIssues.length!==1?'s':''} to fine-tune${pot>0?` — up to ${$$(pot)}/mo in potential savings`:''}`:pot>0?` Up to ${$$(pot)}/mo in potential savings identified`:''}`,color:'#4ade80',trackColor:'rgba(74,222,128,.22)'}
+    :score>=65
+    ?{word:'Good',sub:`Solid foundation.${actionableIssues.length?` A few things to look at${pot>0?` — up to ${$$(pot)}/mo in potential savings`:''}`:pot>0?` Up to ${$$(pot)}/mo in potential savings identified`:''}`,color:'#fbbf24',trackColor:'rgba(251,191,36,.25)'}
+    :{word:'Building',sub:`You're getting set up.${actionableIssues.length?` ${actionableIssues.length} area${actionableIssues.length!==1?'s':''} to focus on${pot>0?` — up to ${$$(pot)}/mo in potential savings`:''}`:' Keep adding your bills to improve your score.'}`,color:'#fb923c',trackColor:'rgba(251,146,60,.25)'};
 
   const ringR=64, ringSize=160, cx=80, cy=80, stroke=10;
   const circ=2*Math.PI*ringR;
@@ -2448,17 +2590,25 @@ function renderDashboard(){
           <span style="color:${topIssue.sev==='high'?'#f87171':'#fbbf24'};font-weight:600">↑ Top issue: </span>${topIssue.text}
         </div>`:''}
         <div class="hero-actions">
-          <button class="btn btn-white-solid btn-sm" onclick="showView('recommendations')">See Recommendations</button>
-          <button class="btn btn-white btn-sm" onclick="showView('aianalysis')">✦ Smart Analysis</button>
+          <button class="btn btn-white-solid btn-sm" onclick="showView('insights')">See Recommendations</button>
+          <button class="btn btn-white btn-sm" onclick="showView('insights')">✦ Smart Analysis</button>
           ${!profile.state?`<button class="btn btn-white btn-sm" onclick="showView('profile')">⌂ Set Home Profile</button>`:''}
         </div>
       </div>
-      <div style="z-index:1;flex-shrink:0;min-width:160px">
+      <div style="z-index:1;flex-shrink:0;min-width:168px">
         <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:rgba(255,255,255,.4);margin-bottom:.75rem">Score breakdown</div>
-        ${pillarBar('Bill Efficiency',p1,40,'var(--green)','⚡','Scores your essential bills against benchmarks — electric vs. state average, mortgage rate, insurance coverage, and internet cost. Lifestyle bills are excluded.')}
-        ${pillarBar('Payment Reliability',p2,25,'var(--amber)','📅','Tracks whether essential bills are paid on time, how many require manual action, and your autopay coverage. Overdue bills have the biggest impact here.')}
-        ${pillarBar('Home Preparedness',p3,25,'var(--red)','🏠','Based on appliance ages from Potential Repairs and key documents in your vault (mortgage, insurance policy, warranty). Aging appliances and missing docs reduce this score.')}
-        ${pillarBar('Profile Complete',p4,10,'var(--teal)','👤','Reflects how much of your Home Profile is filled in — state, ZIP, square footage, year built, and systems. A complete profile enables more accurate scoring and recommendations.')}
+        ${pillarBar('Financial Health',p1,45,'var(--green)','⚡','Measures your essential bills against benchmarks — electric vs. state average, insurance coverage, and internet cost. Does not penalize for market conditions like mortgage rates.')}
+        ${pillarBar('Payment Reliability',p2,35,'var(--amber)','📅','Tracks whether essential bills are paid on time and your autopay coverage. Overdue bills have the biggest impact here. Paying on time is the single best thing you can do for this score.')}
+        ${pillarBar('Home Preparedness',p3,20,'#64b5f6','🏠','Based on appliance ages tracked in Potential Repairs. Only counts against you if appliances are past or near end of life — not for having an older home.')}
+        <div style="height:.5px;background:rgba(255,255,255,.1);margin:.625rem 0"></div>
+        <div style="margin-bottom:3px;display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:10px;color:rgba(255,255,255,.4)">👤 Setup progress</span>
+          <span style="font-size:10px;font-weight:600;color:rgba(255,255,255,.55)">${profilePct}%</span>
+        </div>
+        <div style="height:4px;background:rgba(255,255,255,.1);border-radius:4px;overflow:hidden">
+          <div style="height:100%;width:${profilePct}%;background:rgba(100,181,246,.6);border-radius:4px;transition:width .6s ease"></div>
+        </div>
+        <div style="font-size:10px;color:rgba(255,255,255,.3);margin-top:3px">Not part of your score</div>
       </div>
     </div>`;
 
@@ -2558,7 +2708,7 @@ function renderDashboard(){
       <div class="summary-card-value">${$$(total)}</div>
       <div class="summary-card-sub">${monthly.length} bills · ${$$(total*12)}/yr</div>
     </div>
-    <div class="summary-card s-purple" onclick="showView('analytics')" style="cursor:pointer">
+    <div class="summary-card s-purple" onclick="showView('dashboard')" style="cursor:pointer">
       <div class="summary-card-label">Annual Cost</div>
       <div class="summary-card-value" style="color:var(--purple)">${$$(Math.round(annualTotal))}</div>
       <div class="summary-card-sub">Est. total cost this year${overBudget?` <span style="color:var(--red);font-weight:700">↑ Over budget</span>`:''}
@@ -2629,7 +2779,7 @@ function renderDashboard(){
       </div>
       <div style="flex:1;min-width:0">${legendRows}</div>
     </div>`}
-    <button class="btn btn-ghost btn-sm" onclick="showView('analytics')" style="width:100%;margin-top:.875rem;font-size:11px;justify-content:center">View full analytics →</button>
+    <button class="btn btn-ghost btn-sm" onclick="showView('dashboard')" style="width:100%;margin-top:.875rem;font-size:11px;justify-content:center">View full analytics →</button>
   </div>`;
 
   // ── Timeline (condensed — next 4 upcoming only) ──
@@ -2702,7 +2852,166 @@ function renderDashboard(){
   if(profile2.state){const sl=document.getElementById('sidebar-loc');if(sl)sl.textContent=profile2.state+(profile2.zip?' '+profile2.zip:'');}
   if(profile2.name){const sn=document.getElementById('sidebar-name');const sa=document.getElementById('sidebar-avatar');if(sn)sn.textContent=profile2.name;if(sa)sa.textContent=profile2.name[0].toUpperCase();}
 
+  renderDashAnalytics();
   renderDashBottom();
+}
+
+function renderDashAnalytics(){
+  const {bills,hist}=load();
+  const wrap=document.getElementById('dash-analytics-row');
+  if(!wrap) return;
+  const t=new Date();
+  const UTILITY_CATS=new Set(['Electricity','Natural Gas','Water & Sewer','Trash / Recycling','Utilities']);
+
+  // ── 6-month spend data ──
+  const months=[];
+  for(let i=5;i>=0;i--){
+    const d=new Date(t.getFullYear(),t.getMonth()-i,1);
+    const mo=d.getMonth(),yr=d.getFullYear();
+    const total=i===0
+      ? bills.filter(b=>b.freq==='Monthly'&&(analyticsCategory==='all'||b.cat===analyticsCategory)).reduce((a,b)=>a+b.amount,0)
+      : hist.filter(h=>{const hd=new Date(h.date+'T12:00:00');return hd.getMonth()===mo&&hd.getFullYear()===yr&&(analyticsCategory==='all'||h.cat===analyticsCategory);}).reduce((a,h)=>a+h.amount,0);
+    months.push({label:d.toLocaleDateString('en-US',{month:'short'}),total,mo,yr});
+  }
+  const maxV=Math.max(...months.map(m=>m.total),1);
+  const avg=months.reduce((a,m)=>a+m.total,0)/Math.max(1,months.filter(m=>m.total>0).length);
+
+  // Category filter chips
+  const allCats=['all',...[...new Set(bills.map(b=>b.cat))].sort()];
+  const chipsHTML=allCats.map(c=>`<button class="filter-chip${analyticsCategory===c?' active':''}" style="padding:3px 10px;font-size:11px" onclick="setAnalyticsCat('${c.replace(/'/g,"\\'")}')">
+    ${c==='all'?'All':c}</button>`).join('');
+
+  // Bar chart HTML
+  const barsHTML=months.map((m,i)=>{
+    const h=Math.max(4,Math.round(m.total/maxV*130));
+    const isCurrent=i===5;
+    const color=isCurrent?'var(--accent)':'var(--surface3)';
+    return`<div class="bar-col" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+      <div style="font-size:10px;color:var(--text3);font-weight:500">${m.total>0?$$(m.total):''}</div>
+      <div style="position:relative;width:100%;display:flex;justify-content:center;align-items:flex-end;height:130px">
+        <div style="width:min(32px,80%);height:${h}px;background:${color};border-radius:4px 4px 0 0"
+          onmouseover="this.style.opacity='.75'" onmouseout="this.style.opacity='1'"></div>
+      </div>
+    </div>`;
+  }).join('');
+
+  const labelsHTML=months.map(m=>`<span style="font-size:10px;color:var(--text3);flex:1;text-align:center">${m.label}</span>`).join('');
+
+  // MoM callout
+  const prev=months[4].total, curr=months[5].total;
+  let momHTML='';
+  if(prev>0&&curr>0){
+    const diff=curr-prev;
+    const pct=Math.round((diff/prev)*100);
+    const up=diff>0;
+    momHTML=`<div style="margin-top:.75rem;display:flex;align-items:center;gap:.75rem;padding:.625rem .875rem;background:var(--surface2);border-radius:var(--radius-sm)">
+      <span style="font-size:18px;font-weight:700;color:${up?'var(--red)':'var(--green)'}">${up?'↑':'↓'} ${Math.abs(pct)}%</span>
+      <div style="font-size:12px;color:var(--text2)">
+        <strong style="color:var(--text)">${up?'Up':'Down'} ${$$(Math.abs(diff))} vs last month</strong>
+        <span style="color:var(--text3)"> · ${months[4].label}: ${$$(prev)} → ${months[5].label}: ${$$(curr)}</span>
+      </div>
+    </div>`;
+  }
+
+  // Category breakdown
+  const catTotals={};
+  bills.forEach(b=>{const mo=b.freq==='Monthly'?b.amount:b.freq==='Quarterly'?b.amount/3:b.amount/12;catTotals[b.cat]=(catTotals[b.cat]||0)+mo;});
+  const catSorted=Object.entries(catTotals).sort((a,b)=>b[1]-a[1]);
+  const catMax=catSorted[0]?.[1]||1;
+  const catHTML=catSorted.map(([cat,amt])=>`
+    <div class="cat-row" style="cursor:pointer" onclick="setAnalyticsCat('${cat.replace(/'/g,"\\'")}')">
+      <div class="cat-dot" style="background:${CAT_DOT[cat]||'#8892aa'}"></div>
+      <div style="font-size:12px;flex:1;color:${analyticsCategory===cat?'var(--accent)':'inherit'};font-weight:${analyticsCategory===cat?600:400}">${cat}</div>
+      <div style="width:80px;height:5px;background:var(--surface3);border-radius:3px;overflow:hidden;margin-right:8px;align-self:center">
+        <div style="height:100%;width:${Math.round(amt/catMax*100)}%;background:${CAT_DOT[cat]||'#8892aa'};border-radius:3px"></div>
+      </div>
+      <div style="text-align:right;min-width:60px"><div style="font-size:12px;font-weight:600">${$$(amt)}/mo</div></div>
+    </div>`).join('');
+
+  // Annual projection
+  const moTotal=bills.filter(b=>b.freq==='Monthly').reduce((a,b)=>a+b.amount,0);
+  const qTotal=bills.filter(b=>b.freq==='Quarterly').reduce((a,b)=>a+b.amount,0);
+  const yrTotal=bills.filter(b=>b.freq==='Annually').reduce((a,b)=>a+b.amount,0);
+  const proj=moTotal*12+qTotal*4+yrTotal;
+  const allMonthly=bills.filter(b=>b.freq==='Monthly');
+  const largestBill=allMonthly.length?allMonthly.reduce((a,b)=>b.amount>a.amount?b:a,allMonthly[0]):null;
+  const annualHTML=`
+    <div style="margin-bottom:.875rem">
+      <div style="font-size:26px;font-weight:700;letter-spacing:-.02em;color:var(--text)">${$$(proj)}</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:2px">projected this year</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:6px">
+      ${moTotal?`<div style="display:flex;justify-content:space-between;font-size:12px;padding:4px 0;border-bottom:.5px solid var(--border)"><span style="color:var(--text2)">Recurring bills</span><span style="font-weight:500">${$$(moTotal*12)}</span></div>`:''}
+      ${yrTotal?`<div style="display:flex;justify-content:space-between;font-size:12px;padding:4px 0;border-bottom:.5px solid var(--border)"><span style="color:var(--text2)">One-time / annual</span><span style="font-weight:500">${$$(yrTotal)}</span></div>`:''}
+      ${largestBill?`<div style="display:flex;justify-content:space-between;font-size:12px;padding:4px 0;border-bottom:.5px solid var(--border)"><span style="color:var(--text2)">Largest bill</span><span style="font-weight:500">${largestBill.name} <span style="color:var(--text3);font-weight:400">${Math.round(largestBill.amount*12/proj*100)}%</span></span></div>`:''}
+      <div style="display:flex;justify-content:space-between;font-size:12px;padding:4px 0"><span style="color:var(--text2)">Daily cost</span><span style="font-weight:700;color:var(--accent)">${$$(proj/365)}/day</span></div>
+    </div>`;
+
+  // Utility breakdown (only if utilities are tracked)
+  const utilBills=bills.filter(b=>UTILITY_CATS.has(b.cat));
+  let utilHTML='';
+  if(utilBills.length){
+    const utilTotal=utilBills.reduce((a,b)=>a+(b.freq==='Monthly'?b.amount:b.freq==='Quarterly'?b.amount/3:b.amount/12),0);
+    utilHTML=`<div class="chart-wrap" style="margin-bottom:0;margin-top:1.5rem">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem">
+        <div class="chart-title" style="margin-bottom:0">Utility Breakdown</div>
+        <span style="font-size:11px;color:var(--text3)">${$$(utilTotal)}/mo · ${$$(utilTotal*12)}/yr total</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px">
+        ${utilBills.map(b=>{
+          const monthly=b.freq==='Monthly'?b.amount:b.freq==='Quarterly'?b.amount/3:b.amount/12;
+          const pct=utilTotal>0?Math.round(monthly/utilTotal*100):0;
+          const dot=CAT_DOT[b.cat]||'#f0a542';
+          const icon=CAT_ICONS[b.cat]||'⚡';
+          return`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.875rem 1rem">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:.5rem">
+              <span style="font-size:16px">${icon}</span>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:13px;font-weight:600;color:var(--text)">${b.name}</div>
+                <div style="font-size:11px;color:var(--text3)">${b.provider||b.cat}</div>
+              </div>
+              <span style="font-size:14px;font-weight:700;color:var(--text)">${$$(monthly)}<span style="font-size:10px;font-weight:400;color:var(--text3)">/mo</span></span>
+            </div>
+            <div style="height:4px;background:var(--surface3);border-radius:4px;overflow:hidden;margin-bottom:4px">
+              <div style="height:100%;width:${pct}%;background:${dot};border-radius:4px"></div>
+            </div>
+            <div style="font-size:11px;color:var(--text3)">${pct}% of utilities · ${$$(monthly*12)}/yr</div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  }
+
+  wrap.innerHTML=`
+    <!-- Spend Trend (full, with filter) + Category + Annual — 3 columns -->
+    <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:16px">
+
+      <!-- Spend trend -->
+      <div class="chart-wrap" style="margin-bottom:0">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.625rem;flex-wrap:wrap;gap:.5rem">
+          <div class="chart-title" style="margin-bottom:0">Monthly Spend</div>
+          <div style="display:flex;gap:5px;flex-wrap:wrap">${chipsHTML}</div>
+        </div>
+        ${avg>0?`<div style="font-size:11px;color:var(--text3);margin-bottom:.375rem">6-month average: ${$$(avg)}/mo${analyticsCategory!=='all'?' ('+analyticsCategory+')':''}</div>`:''}
+        <div class="bar-chart" style="height:130px">${barsHTML}</div>
+        <div style="display:flex;justify-content:space-between;margin-top:6px">${labelsHTML}</div>
+        ${momHTML}
+      </div>
+
+      <!-- Spend by category -->
+      <div class="chart-wrap" style="margin-bottom:0">
+        <div class="chart-title">By Category</div>
+        <div class="cat-breakdown">${catHTML||'<div style="font-size:13px;color:var(--text3);padding:.75rem 0">No bills yet</div>'}</div>
+      </div>
+
+      <!-- Annual projection -->
+      <div class="chart-wrap" style="margin-bottom:0">
+        <div class="chart-title">Annual Projection</div>
+        ${annualHTML}
+      </div>
+
+    </div>
+    ${utilHTML}`;
 }
 
 function renderDashBottom(){
@@ -2765,7 +3074,7 @@ function renderDashBottom(){
       icon:topRec.icon,iconBg:'var(--green-bg)',
       title:`Potential saving: ~${$$(topRec.savings)}/mo`,
       sub:topRec.title,
-      action:()=>showView('recommendations')
+      action:()=>showView('insights')
     });
   }
 
@@ -2807,32 +3116,6 @@ function renderDashBottom(){
           <div class="attention-item-arrow">›</div>
         </div>`).join('');
 
-  // ── Mini 6-month bar chart ──
-  const months6=[];
-  for(let i=5;i>=0;i--){
-    const d=new Date(y,m-i,1);
-    const mo=d.getMonth(),yr=d.getFullYear();
-    const total_=i===0
-      ? bills.filter(b=>b.freq==='Monthly').reduce((a,b)=>a+b.amount,0)
-      : hist.filter(h=>{const hd=new Date(h.date+'T12:00:00');return hd.getMonth()===mo&&hd.getFullYear()===yr;}).reduce((a,h)=>a+h.amount,0);
-    months6.push({label:d.toLocaleDateString('en-US',{month:'short'}),total:total_});
-  }
-  const maxM=Math.max(...months6.map(x=>x.total),1);
-  const miniChartHTML=months6.map((mo,i)=>{
-    const h=Math.max(3,Math.round(mo.total/maxM*56));
-    const isCurr=i===5;
-    return`<div class="mini-bar-col">
-      <div class="mini-bar-fill" style="height:${h}px;background:${isCurr?'var(--accent)':'var(--surface3)'}" title="${mo.label}: ${$$(mo.total)}"></div>
-      <div style="font-size:9px;color:var(--text3);text-align:center">${mo.label}</div>
-    </div>`;
-  }).join('');
-
-  const currTotal=months6[5].total;
-  const prevTotal=months6[4].total;
-  const momDiff=prevTotal>0?Math.round(((currTotal-prevTotal)/prevTotal)*100):0;
-  const momColor=momDiff>0?'var(--red)':momDiff<0?'var(--green)':'var(--text3)';
-  const momArrow=momDiff>0?'↑':momDiff<0?'↓':'→';
-
   // ── Quick contacts (top 4 by priority) ──
   const contacts=loadContacts?loadContacts():[];
   const topContacts=contacts.slice(0,4);
@@ -2862,30 +3145,6 @@ function renderDashBottom(){
         ${attentionHTML}
       </div>
 
-      <!-- Mini chart -->
-      <div class="mini-chart-wrap">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.875rem">
-          <div>
-            <div style="font-size:13px;font-weight:600;color:var(--text)">Monthly Spend</div>
-            <div style="font-size:11px;color:var(--text3);margin-top:1px">Last 6 months</div>
-          </div>
-          <div style="text-align:right">
-            <div style="font-size:18px;font-weight:700;color:var(--text);letter-spacing:-.02em">${$$(currTotal)}</div>
-            <div style="font-size:11px;color:${momColor};font-weight:600">${momArrow} ${Math.abs(momDiff)}% vs last month</div>
-          </div>
-        </div>
-        <div class="mini-bar-chart">${miniChartHTML}</div>
-        <div style="margin-top:.875rem;display:flex;gap:8px;flex-wrap:wrap">
-          <button class="btn btn-ghost btn-sm" style="font-size:11px;flex:1;justify-content:center" onclick="showView('analytics')">Full analytics →</button>
-          <button class="btn btn-ghost btn-sm" style="font-size:11px;flex:1;justify-content:center" onclick="showView('bills')">All bills →</button>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- Second row: Quick contacts + Score explainer -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px">
-
       <!-- Quick contacts -->
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem 1.25rem;box-shadow:var(--shadow-sm)">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem">
@@ -2893,26 +3152,6 @@ function renderDashBottom(){
           <button class="btn btn-ghost btn-sm" style="font-size:11px" onclick="showView('contacts')">All contacts →</button>
         </div>
         ${qcHTML}
-      </div>
-
-      <!-- Score explainer -->
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem 1.25rem;box-shadow:var(--shadow-sm)">
-        <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:.75rem">💡 How to improve your score</div>
-        <div style="display:flex;flex-direction:column;gap:7px">
-          <div style="display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--text2);line-height:1.5">
-            <span style="font-size:14px;flex-shrink:0">⚡</span><span><strong style="color:var(--text)">Bill Efficiency (40 pts)</strong> — Keep bills at or below state/national averages. Negotiate internet and shop insurance annually.</span>
-          </div>
-          <div style="display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--text2);line-height:1.5">
-            <span style="font-size:14px;flex-shrink:0">📅</span><span><strong style="color:var(--text)">Payment Reliability (25 pts)</strong> — Pay bills on time and set up autopay where you can. Overdue bills hurt this the most.</span>
-          </div>
-          <div style="display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--text2);line-height:1.5">
-            <span style="font-size:14px;flex-shrink:0">🏠</span><span><strong style="color:var(--text)">Home Preparedness (25 pts)</strong> — Add appliances in Potential Repairs and upload your insurance and mortgage documents.</span>
-          </div>
-          <div style="display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--text2);line-height:1.5">
-            <span style="font-size:14px;flex-shrink:0">👤</span><span><strong style="color:var(--text)">Profile Complete (10 pts)</strong> — Fill in your state, ZIP, square footage, and home systems in Home Profile.</span>
-          </div>
-        </div>
-        <button class="btn btn-ghost btn-sm" style="font-size:11px;margin-top:.875rem;width:100%;justify-content:center" onclick="showView('profile')">Complete my profile →</button>
       </div>
 
     </div>`;
@@ -3145,8 +3384,33 @@ function renderLifestyle(){
     <div class="dash-bills-list">${lifestyle.map(billRowHTML).join('')}</div>
   </div>
   <div style="background:var(--accent-bg);border:1px solid var(--accent-border);border-radius:var(--radius-sm);padding:.875rem 1.25rem;margin-top:1rem;font-size:13px;color:var(--accent)">
-    💡 <strong>Tip:</strong> Lifestyle bills are often the most negotiable. Internet, streaming, and phone plans can frequently be reduced by calling your provider or switching plans. Check the <a href="#" onclick="showView('recommendations');return false" style="color:var(--accent);font-weight:600">Recommendations tab</a> for specific savings opportunities.
+    💡 <strong>Tip:</strong> Lifestyle bills are often the most negotiable. Internet, streaming, and phone plans can frequently be reduced by calling your provider or switching plans. Check the <a href="#" onclick="showView('insights');return false" style="color:var(--accent);font-weight:600">Recommendations tab</a> for specific savings opportunities.
   </div>`;
+}
+
+let billsViewMode='bills';
+
+function switchBillsView(val){
+  billsViewMode=val;
+  const chips=document.getElementById('bills-filter-chips');
+  const sub=document.getElementById('bills-view-sub');
+  const search=document.getElementById('bill-search');
+  if(val==='history'){
+    if(chips)chips.style.display='none';
+    if(search)search.placeholder='Search history...';
+    if(sub)sub.textContent="A full record of every payment you've made.";
+    renderHistory();
+  } else {
+    if(chips)chips.style.display='flex';
+    if(search)search.placeholder='Search...';
+    if(sub)sub.textContent='Every bill you owe, tracked and under control.';
+    renderBillsTable();
+  }
+}
+
+function renderBillsView(){
+  if(billsViewMode==='history') renderHistory();
+  else renderBillsTable();
 }
 
 function renderBillsTable(){
@@ -3156,7 +3420,6 @@ function renderBillsTable(){
 
   const filtered=bills.filter(b=>{
     const s=getStatus(b,hist);
-    if(billFilter==='paid'&&s!=='paid')return false;
     if(billFilter==='unpaid'&&s==='paid')return false;
     if(billFilter==='overdue'&&s!=='overdue')return false;
     if(billFilter==='manual'&&b.autopay)return false;
@@ -3200,18 +3463,22 @@ function renderBillsTable(){
     </tr>`;
   }
 
-  function sectionHTML(id,label,items){
+  function sectionHTML(id,label,items,isLifestyle=false){
     if(!items.length)return'';
     const monthlyTotal=items.filter(b=>b.freq==='Monthly').reduce((a,b)=>a+b.amount,0);
-    return`<div style="margin-bottom:10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden">
-      <div onclick="toggleBillSection('${id}')" style="display:flex;align-items:center;justify-content:space-between;padding:1rem 1.25rem;cursor:pointer;user-select:none;transition:background .15s" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background=''">
+    const titleEl=isLifestyle
+      ?`<span style="font-size:14px;font-weight:500;color:var(--text2)">${label}</span><span style="font-size:10px;font-weight:500;color:var(--text3);background:var(--surface3);padding:2px 7px;border-radius:20px;margin-left:6px">Lifestyle</span>`
+      :`<span style="font-family:'Fraunces',serif;font-size:17px;font-weight:500;letter-spacing:-.02em">${label}</span>`;
+    const startOpen=!isLifestyle;
+    return`<div style="margin-bottom:10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden${isLifestyle?';opacity:.9':''}">
+      <div onclick="toggleBillSection('${id}')" style="display:flex;align-items:center;justify-content:space-between;padding:${isLifestyle?'.75rem':'1rem'} 1.25rem;cursor:pointer;user-select:none;transition:background .15s" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background=''">
         <div style="display:flex;align-items:center;gap:10px">
-          <span id="bills-arrow-${id}" style="font-size:12px;color:var(--text3);transition:transform .2s;display:inline-block;transform:rotate(90deg)">▶</span>
-          <span style="font-family:'Fraunces',serif;font-size:17px;font-weight:500;letter-spacing:-.02em">${label}</span>
+          <span id="bills-arrow-${id}" style="font-size:12px;color:var(--text3);transition:transform .2s;display:inline-block;transform:rotate(${startOpen?90:0}deg)">▶</span>
+          ${titleEl}
         </div>
-        <div style="font-size:13px;color:var(--text2)">${items.length} bill${items.length!==1?'s':''} &nbsp;·&nbsp; <span style="color:var(--text);font-weight:600">${$$(monthlyTotal)}/mo</span></div>
+        <div style="font-size:${isLifestyle?12:13}px;color:var(--text2)">${items.length} bill${items.length!==1?'s':''} &nbsp;·&nbsp; <span style="color:var(--text);font-weight:600">${$$(monthlyTotal)}/mo</span></div>
       </div>
-      <div id="bills-section-${id}" style="display:block;border-top:1px solid var(--border)">
+      <div id="bills-section-${id}" style="display:${startOpen?'block':'none'};border-top:1px solid var(--border)">
         <table class="bills-table">
           <thead><tr><th>Bill</th><th>Amount</th><th>Frequency</th><th>Due</th><th>Status</th><th>Autopay</th><th>Flag</th><th>Actions</th></tr></thead>
           <tbody>${items.map(billRowHTML).join('')}</tbody>
@@ -3220,7 +3487,7 @@ function renderBillsTable(){
     </div>`;
   }
 
-  wrap.innerHTML=sectionHTML('essential','Essential',essential)+sectionHTML('lifestyle','Lifestyle',lifestyle);
+  wrap.innerHTML=sectionHTML('essential','Essential Bills',essential)+sectionHTML('lifestyle','Lifestyle',lifestyle,true);
 }
 
 function toggleBillSection(id){
@@ -3233,14 +3500,15 @@ function toggleBillSection(id){
 
 function filterBills(f,btn){
   billFilter=f;
-  document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
+  document.querySelectorAll('#bills-filter-chips .filter-chip').forEach(c=>c.classList.remove('active'));
   btn.classList.add('active');
   renderBillsTable();
 }
 
 function renderHistory(){
   const {hist}=load();
-  const wrap=document.getElementById('history-wrap');
+  // Render into bills-grouped-wrap when called from bills view, history-wrap otherwise
+  const wrap=document.getElementById('bills-grouped-wrap')||document.getElementById('history-wrap');
   if(!hist.length){
     wrap.innerHTML=`<div class="empty"><div class="empty-icon">📋</div><div>No payments recorded yet.</div></div>`;
     return;
@@ -3756,6 +4024,14 @@ function partnerCardHTML(p){
   </div>`;
 }
 
+function switchInsightsTab(tab){
+  document.getElementById('insights-panel-recs').style.display=tab==='recs'?'block':'none';
+  document.getElementById('insights-panel-ask').style.display=tab==='ask'?'block':'none';
+  document.getElementById('insights-tab-recs').classList.toggle('active',tab==='recs');
+  document.getElementById('insights-tab-ask').classList.toggle('active',tab==='ask');
+  document.getElementById('recs-refresh-btn').style.display=tab==='recs'?'':'none';
+}
+
 function renderRecommendations(){
   const recs=genRecs();
   const high=recs.filter(r=>r.priority==='high');
@@ -4052,27 +4328,18 @@ function renderAnalytics(){
   const qTotal=bills.filter(b=>b.freq==='Quarterly').reduce((a,b)=>a+b.amount,0);
   const yrTotal=bills.filter(b=>b.freq==='Annually').reduce((a,b)=>a+b.amount,0);
   const proj=moTotal*12+qTotal*4+yrTotal;
+  const allMonthly2=bills.filter(b=>b.freq==='Monthly');
+  const largestBill2=allMonthly2.length?allMonthly2.reduce((a,b)=>b.amount>a.amount?b:a,allMonthly2[0]):null;
   document.getElementById('annual-proj').innerHTML=`
     <div style="margin-bottom:1rem">
       <div style="font-size:26px;font-weight:700;letter-spacing:-.02em;color:var(--text)">${$$(proj)}</div>
       <div style="font-size:12px;color:var(--text3);margin-top:3px">projected total this year</div>
     </div>
     <div style="display:flex;flex-direction:column;gap:8px">
-      <div style="display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:.5px solid var(--border)">
-        <span style="color:var(--text2)">Monthly ×12</span><span style="font-weight:500">${$$(moTotal*12)}</span>
-      </div>
-      <div style="display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:.5px solid var(--border)">
-        <span style="color:var(--text2)">Quarterly ×4</span><span style="font-weight:500">${$$(qTotal*4)}</span>
-      </div>
-      <div style="display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:.5px solid var(--border)">
-        <span style="color:var(--text2)">Annual bills</span><span style="font-weight:500">${$$(yrTotal)}</span>
-      </div>
-      <div style="display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:.5px solid var(--border)">
-        <span style="color:var(--text2)">Daily cost</span><span style="font-weight:600;color:var(--accent)">${$$(proj/365)}/day</span>
-      </div>
-      <div style="display:flex;justify-content:space-between;font-size:14px;padding:6px 0;font-weight:700">
-        <span>Total</span><span>${$$(proj)}</span>
-      </div>
+      ${moTotal?`<div style="display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:.5px solid var(--border)"><span style="color:var(--text2)">Recurring bills</span><span style="font-weight:500">${$$(moTotal*12)}</span></div>`:''}
+      ${yrTotal?`<div style="display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:.5px solid var(--border)"><span style="color:var(--text2)">One-time / annual</span><span style="font-weight:500">${$$(yrTotal)}</span></div>`:''}
+      ${largestBill2?`<div style="display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:.5px solid var(--border)"><span style="color:var(--text2)">Largest bill</span><span style="font-weight:500">${largestBill2.name} <span style="color:var(--text3);font-weight:400">${Math.round(largestBill2.amount*12/proj*100)}%</span></span></div>`:''}
+      <div style="display:flex;justify-content:space-between;font-size:13px;padding:5px 0"><span style="color:var(--text2)">Daily cost</span><span style="font-weight:700;color:var(--accent)">${$$(proj/365)}/day</span></div>
     </div>`;
 
   // ── Utility breakdown ──
@@ -4112,7 +4379,7 @@ function renderAnalytics(){
 
 function setAnalyticsCat(cat){
   analyticsCategory=cat;
-  renderAnalytics();
+  renderDashAnalytics();
 }
 
 function loadProfileForm(){
@@ -4282,7 +4549,7 @@ const DOC_TYPE_INFO={
 
 function renderDocVault(){
   const docs=loadDocs();
-  const counts={all:docs.length,mortgage:0,insurance:0,hoa:0,warranty:0,other:0};
+  const counts={all:docs.length,inspection:0,mortgage:0,insurance:0,hoa:0,warranty:0,other:0};
   docs.forEach(d=>counts[d.type]=(counts[d.type]||0)+1);
   Object.entries(counts).forEach(([k,v])=>{const el=document.getElementById('doc-count-'+k);if(el)el.textContent=v+' file'+(v!==1?'s':'');});
   const filtered=docFilter==='all'?docs:docs.filter(d=>d.type===docFilter);
@@ -4294,6 +4561,11 @@ function renderDocVault(){
     const info=DOC_TYPE_INFO[d.type]||DOC_TYPE_INFO.other;
     const analyzed=d.analysis?`<span class="doc-status-analyzed">✓ Analyzed</span>`:`<span class="doc-status-pending">Pending</span>`;
     const size=d.size?(d.size/1024/1024).toFixed(2)+' MB':'—';
+    // Inspection docs saved from wizard have JSON as analysis — route to Inspection tab
+    const isWizardInspection=d.type==='inspection'&&!d.base64;
+    const actionBtn=isWizardInspection
+      ?`<button class="btn btn-primary btn-sm" onclick="showView('inspection')">View Report</button>`
+      :`<button class="btn btn-primary btn-sm" onclick="openDocAnalysis(${d.id})">${d.analysis?'View Analysis':'Analyze'}</button>`;
     return`<div class="doc-item">
       <div class="doc-item-icon" style="background:${info.color}">${info.icon}</div>
       <div class="doc-item-info">
@@ -4302,7 +4574,7 @@ function renderDocVault(){
       </div>
       <div class="doc-item-actions">
         ${analyzed}
-        <button class="btn btn-primary btn-sm" onclick="openDocAnalysis(${d.id})">${d.analysis?'View Analysis':'Analyze'}</button>
+        ${actionBtn}
         <button class="btn btn-danger-soft btn-sm" onclick="deleteDoc(${d.id})">✕</button>
       </div>
     </div>`;
@@ -5345,6 +5617,17 @@ const APPLIANCE_META={
   other:      {icon:'🔧',label:'Appliance',lifespan:[8,15],costLow:200,costHigh:5000,tip:'Keep a record of model numbers and purchase dates — it helps when calling for service.'}
 };
 
+// Maintenance/repair log entry types — each carries an estimated number of years
+// it typically adds back to a system's remaining useful life.
+const SERVICE_TYPES={
+  routine:      {label:'Routine maintenance / tune-up',    icon:'🔧', ext:1},
+  minor_repair: {label:'Minor repair',                     icon:'🛠️', ext:1},
+  major_repair: {label:'Major repair',                     icon:'⚙️', ext:2},
+  component:    {label:'Major component replaced',         icon:'🔩', ext:4},
+  resurfaced:   {label:'Resurfaced / recoated',             icon:'🏗️', ext:5},
+  inspection:   {label:'Inspected — no work done',          icon:'🔍', ext:0}
+};
+
 // Regional cost multipliers by state
 const STATE_COST_MULT={
   'California':1.35,'New York':1.30,'Massachusetts':1.28,'Connecticut':1.25,'New Jersey':1.22,
@@ -5357,45 +5640,218 @@ const STATE_COST_MULT={
 function loadAppliances(){return JSON.parse(localStorage.getItem(APPLIANCES_KEY)||'[]');}
 function saveAppliances(arr){localStorage.setItem(APPLIANCES_KEY,JSON.stringify(arr));}
 
+// ── Smart cost estimator — uses profile data to narrow replacement cost range ──
+// Rather than showing a wide national range, we use: home type, sqft, heating/cooling
+// type, electrical panel type, plumbing material, and state to give a tight estimate.
+function getSmartCostRange(apType, profile){
+  const state=profile.state||'';
+  const sqft=parseInt(profile.sqft)||1500;
+  const mult=STATE_COST_MULT[state]||1.0;
+
+  // Helper: round to nearest $50 for tighter numbers
+  const r50=n=>Math.round(n/50)*50;
+
+  let lo, hi, basis='';
+
+  switch(apType){
+
+    case 'furnace': {
+      const hType=profile.heating||'';
+      if(/heat pump/i.test(hType)){
+        // Heat pump replacement — different cost than gas furnace
+        lo=sqft<1200?3800:sqft<2200?5500:7000;
+        hi=sqft<1200?6000:sqft<2200?8500:11000;
+        basis='heat pump';
+      } else if(/electric baseboard/i.test(hType)){
+        lo=800; hi=2500; basis='electric baseboard';
+      } else if(/oil/i.test(hType)){
+        lo=sqft<1500?3500:4500; hi=sqft<1500?6000:8000; basis='oil furnace';
+      } else {
+        // Gas furnace — most common
+        lo=sqft<1000?2200:sqft<1600?2800:sqft<2400?3400:4200;
+        hi=sqft<1000?3800:sqft<1600?4800:sqft<2400?5800:7000;
+        basis='gas furnace';
+      }
+      break;
+    }
+
+    case 'hvac': {
+      const cType=profile.cooling||'';
+      if(/mini.split/i.test(cType)){
+        lo=700; hi=2200; basis='mini-split';
+      } else if(/swamp|evap/i.test(cType)){
+        lo=500; hi=1800; basis='swamp cooler';
+      } else if(/window/i.test(cType)){
+        lo=300; hi=800; basis='window unit';
+      } else {
+        // Central A/C — size by square footage
+        const tons=sqft<1200?2:sqft<1600?2.5:sqft<2200?3:sqft<2800?3.5:4;
+        lo=r50(tons*1100);
+        hi=r50(tons*2200);
+        basis=`central A/C (~${tons} ton)`;
+      }
+      break;
+    }
+
+    case 'water_heater': {
+      const whType=profile.wh||'';
+      if(/tankless gas/i.test(whType)){
+        lo=1400; hi=3200; basis='tankless gas';
+      } else if(/tankless electric/i.test(whType)){
+        lo=1000; hi=2500; basis='tankless electric';
+      } else if(/heat pump water/i.test(whType)){
+        lo=1200; hi=2800; basis='heat pump water heater';
+      } else if(/electric tank/i.test(whType)){
+        lo=600; hi=1400; basis='electric tank';
+      } else {
+        // Gas tank — most common
+        lo=700; hi=1600; basis='gas tank';
+      }
+      break;
+    }
+
+    case 'roof': {
+      const roofMeta=profile.roofMaterial||profile.roof||'';
+      const sqftFactor=sqft<1200?1.0:sqft<1800?1.4:sqft<2400?1.8:sqft<3200?2.3:2.8;
+      if(/metal/i.test(roofMeta)){
+        lo=r50(6000*sqftFactor); hi=r50(14000*sqftFactor); basis='metal roof';
+      } else if(/tile|clay/i.test(roofMeta)){
+        lo=r50(7000*sqftFactor); hi=r50(18000*sqftFactor); basis='tile roof';
+      } else if(/wood|shake/i.test(roofMeta)){
+        lo=r50(6000*sqftFactor); hi=r50(14000*sqftFactor); basis='wood shake';
+      } else {
+        // Asphalt shingle — by far most common
+        lo=r50(4500*sqftFactor); hi=r50(9000*sqftFactor); basis='asphalt shingle';
+      }
+      break;
+    }
+
+    case 'electrical_panel': {
+      const panel=profile.electricalPanel||'';
+      if(/federal pacific|stab.lok|zinsco/i.test(panel)){
+        // These need full replacement and often are priority — tighter high-end
+        lo=2200; hi=4500; basis='full panel replacement (legacy brand)';
+      } else if(/fuse box|older/i.test(panel)){
+        lo=1800; hi=3800; basis='fuse box upgrade';
+      } else if(/200/i.test(panel)){
+        // 200A panel — likely just needs a subpanel or breaker work, not full replacement
+        lo=1200; hi=2800; basis='200A service';
+      } else if(/100/i.test(panel)){
+        lo=1500; hi=3200; basis='100A to 200A upgrade';
+      } else {
+        lo=1500; hi=3500; basis='electrical panel';
+      }
+      break;
+    }
+
+    case 'plumbing': {
+      const mat=profile.plumbing||'';
+      if(/galvanized/i.test(mat)){
+        // Galvanized needs full repiping — expensive
+        lo=r50(sqft*2.5); hi=r50(sqft*5); basis='galvanized repiping';
+      } else if(/lead/i.test(mat)){
+        lo=r50(sqft*3); hi=r50(sqft*6); basis='lead pipe replacement';
+      } else if(/copper/i.test(mat)){
+        lo=1500; hi=4000; basis='copper (partial repair likely)';
+      } else if(/pex/i.test(mat)){
+        lo=1000; hi=3000; basis='PEX (modern, low repair cost)';
+      } else {
+        lo=1500; hi=8000; basis='plumbing';
+      }
+      break;
+    }
+
+    case 'windows': {
+      // Estimate window count from sqft
+      const winCount=Math.round(sqft/150);
+      const perWindow=mult>=1.2?650:mult>=1.05?500:400;
+      lo=r50(winCount*perWindow*0.6);
+      hi=r50(winCount*perWindow*1.3);
+      basis=`~${winCount} windows`;
+      break;
+    }
+
+    default: {
+      // For appliances without profile signals, use meta range with state mult
+      const meta=APPLIANCE_META[apType]||APPLIANCE_META.other;
+      lo=Math.round(meta.costLow*mult/100)*100;
+      hi=Math.round(meta.costHigh*mult/100)*100;
+      break;
+    }
+  }
+
+  // Apply state multiplier (for profile-driven estimates above)
+  if(apType!=='other'){
+    lo=r50(lo*mult);
+    hi=r50(hi*mult);
+  }
+
+  // Format: if range is tight (hi <= lo*1.6), show as single tight range
+  // If still wide, that's honest — not enough info to narrow further
+  const loFmt='$'+lo.toLocaleString();
+  const hiFmt='$'+hi.toLocaleString();
+  const costStr=lo===hi?loFmt:`${loFmt}–${hiFmt}`;
+  return{lo,hi,costStr,basis};
+}
+
+
+
+// Total years a system's expected life should be pushed out by, based on its
+// logged maintenance/repair history. Capped so estimates stay realistic —
+// tune-ups can't make a system live forever.
+function getServiceExtension(ap){
+  const meta=APPLIANCE_META[ap.type]||APPLIANCE_META.other;
+  const [minLife]=meta.lifespan;
+  const log=ap.serviceLog||[];
+  let ext=0;
+  log.forEach(e=>{ext+=(SERVICE_TYPES[e.type]||{ext:0}).ext;});
+  const cap=Math.max(2,Math.round(minLife*0.6));
+  return Math.min(ext,cap);
+}
+
 function getApplianceStatus(ap){
   const meta=APPLIANCE_META[ap.type]||APPLIANCE_META.other;
   const age=new Date().getFullYear()-ap.year;
   const [minLife,maxLife]=meta.lifespan;
   const condMult=ap.condition==='poor'?0.8:ap.condition==='fair'?0.9:1.0;
-  const adjMax=Math.round(maxLife*condMult);
-  const adjMin=Math.round(minLife*condMult);
+  const ext=getServiceExtension(ap);
+  const adjMax=Math.round(maxLife*condMult)+ext;
+  const adjMin=Math.round(minLife*condMult)+ext;
   const pct=Math.min(age/adjMax,1);
   const yearsLeft=Math.max(0,adjMin-age);
   const yearsLeftMax=Math.max(0,adjMax-age);
+  // Single best-estimate figure for "years remaining" — midpoint of the
+  // adjusted min/max window, minus current age.
+  const estRemaining=Math.max(0,Math.round((adjMin+adjMax)/2-age));
   let status,statusLabel,message;
   if(pct>=1){status='overdue';statusLabel='Past expected life';}
   else if(pct>=0.85){status='soon';statusLabel='Nearing end of life';}
   else if(pct>=0.65){status='watch';statusLabel='Worth watching';}
   else{status='good';statusLabel='Looking good';}
-  return{age,pct,adjMin,adjMax,yearsLeft,yearsLeftMax,status,statusLabel};
+  return{age,pct,adjMin,adjMax,yearsLeft,yearsLeftMax,estRemaining,ext,status,statusLabel};
 }
 
 function getApplianceMessage(ap,st){
   const meta=APPLIANCE_META[ap.type]||APPLIANCE_META.other;
   const name=ap.name||meta.label;
-  const {age,adjMax,yearsLeft,yearsLeftMax,status}=st;
+  const {age,adjMax,yearsLeft,yearsLeftMax,estRemaining,ext,status}=st;
   const {profile}=load();
   const state=profile.state||'';
-  const mult=STATE_COST_MULT[state]||1.0;
-  const lo=Math.round(meta.costLow*mult/100)*100;
-  const hi=Math.round(meta.costHigh*mult/100)*100;
-  const costStr=`$${lo.toLocaleString()}–$${hi.toLocaleString()}`;
+  const {lo,hi,costStr,basis}=getSmartCostRange(ap.type,profile);
   const stateNote=state?` in ${state}`:'';
+  // Show what narrowed the estimate, if we have good data
+  const basisNote=basis&&basis!==meta.label?`<span style="font-size:11px;color:var(--text3);display:block;margin-top:3px">Based on your ${basis}${stateNote}</span>`:'';
+  const extNote=ext>0?` Maintenance on record has pushed that estimate out by about ${ext} yr${ext!==1?'s':''}.`:'';
 
   if(status==='overdue'){
-    return{cls:'overdue',msg:`Heads up! Your ${name} is ${age} years old — that's beyond the typical ${adjMax}-year lifespan. It's probably still running fine, but now's a good time to start budgeting. Replacements typically run ${costStr}${stateNote}.`};
+    return{cls:'overdue',msg:`Heads up! Your ${name} is ${age} years old — that's beyond the typical ${adjMax}-year lifespan.${extNote} It's probably still running fine, but now's a good time to start budgeting. Replacements typically run ${costStr}${basisNote?'':stateNote}.${basisNote}`};
   } else if(status==='soon'){
     const yr=yearsLeft<=1?'within the next year or two':`in roughly ${yearsLeft}–${yearsLeftMax} years`;
-    return{cls:'soon',msg:`Something to keep in mind — your ${name} is ${age} years old and could be due for replacement ${yr}. No need to panic, but worth setting a little aside. Budget estimate: ${costStr}${stateNote}.`};
+    return{cls:'soon',msg:`Something to keep in mind — your ${name} is ${age} years old and could be due for replacement ${yr} (est. ${estRemaining} yr${estRemaining!==1?'s':''} remaining).${extNote} No need to panic, but worth setting a little aside. Budget estimate: ${costStr}${basisNote?'':stateNote}.${basisNote}`};
   } else if(status==='watch'){
-    return{cls:'watch',msg:`Your ${name} is ${age} years old and in the second half of its expected lifespan. It's likely doing great — just something to keep in the back of your mind as you plan ahead. Typical replacement: ${costStr}${stateNote}.`};
+    return{cls:'watch',msg:`Your ${name} is ${age} years old and in the second half of its expected lifespan — an estimated ${estRemaining} yr${estRemaining!==1?'s':''} remaining.${extNote} It's likely doing great — just something to keep in the back of your mind. Typical replacement: ${costStr}${basisNote?'':stateNote}.${basisNote}`};
   } else {
-    return{cls:'good',msg:`Your ${name} is ${age} years old — still well within its expected lifespan of ${adjMax} years. Nothing to worry about here! ${meta.tip}`};
+    return{cls:'good',msg:`Your ${name} is ${age} years old — still well within its expected lifespan, with an estimated ${estRemaining} yr${estRemaining!==1?'s':''} remaining.${extNote} Nothing to worry about here! ${meta.tip}`};
   }
 }
 
@@ -5450,9 +5906,9 @@ function renderRepairs(){
   const watchOrWorse=appliances.filter((_,i)=>statuses[i]!=='good');
   let totalLo=0,totalHi=0;
   watchOrWorse.forEach(ap=>{
-    const m=APPLIANCE_META[ap.type]||APPLIANCE_META.other;
-    totalLo+=Math.round(m.costLow*mult/100)*100;
-    totalHi+=Math.round(m.costHigh*mult/100)*100;
+    const {lo,hi}=getSmartCostRange(ap.type,profile);
+    totalLo+=lo;
+    totalHi+=hi;
   });
   const monthlySuggested=Math.round((totalLo+totalHi)/2/120/10)*10||50;
   const pillsEl=document.getElementById('repairs-stat-pills');
@@ -5490,9 +5946,7 @@ function renderRepairs(){
     const name=ap.name||meta.label;
     const yearsInfo=st.status==='overdue'
       ?`<span style="color:var(--red);font-weight:600">Past lifespan by ${st.age-st.adjMax} yr${st.age-st.adjMax!==1?'s':''}</span>`
-      :st.yearsLeft>0
-      ?`<span style="color:var(--text3)">${st.yearsLeft}–${st.yearsLeftMax} yrs left</span>`
-      :`<span style="color:var(--amber)">Near end of life</span>`;
+      :`<span style="color:${st.status==='soon'?'var(--amber)':'var(--text3)'}">~${st.estRemaining} yr${st.estRemaining!==1?'s':''} left</span>`;
     return`<div style="display:flex;align-items:center;gap:10px;margin-bottom:.625rem">
       <div style="width:22px;text-align:center;font-size:15px;flex-shrink:0">${meta.icon}</div>
       <div style="width:140px;font-size:12px;color:var(--text);font-weight:500;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${name}">${name}</div>
@@ -5513,8 +5967,8 @@ function renderRepairs(){
 
   appliances.forEach(ap=>{
     const st=getApplianceStatus(ap);
-    const meta=APPLIANCE_META[ap.type]||APPLIANCE_META.other;
-    const costMid=Math.round(((meta.costLow+meta.costHigh)/2)*mult/100)*100;
+    const {lo,hi}=getSmartCostRange(ap.type,profile);
+    const costMid=Math.round((lo+hi)/2/100)*100;
     // Estimate replacement year = install year + midpoint of lifespan range
     const midLife=Math.round((st.adjMin+st.adjMax)/2);
     const installYear=ap.year||currYear-st.age;
@@ -5566,7 +6020,10 @@ function renderRepairs(){
     const installYear=ap.year?ap.year:new Date().getFullYear()-st.age;
     const lo=Math.round(meta.costLow*mult/100)*100;
     const hi=Math.round(meta.costHigh*mult/100)*100;
-    const servicedStr=ap.serviced?`Last serviced ${ap.serviced}`:'No service record';
+    const logCount=(ap.serviceLog||[]).length;
+    const servicedStr=logCount
+      ?`🔧 ${logCount} service record${logCount!==1?'s':''}${st.ext>0?` · +${st.ext} yr${st.ext!==1?'s':''} added to estimate`:''}`
+      :'No service records on file — add one to sharpen this estimate';
     return`<div class="appliance-card status-${st.status}">
       <div class="appliance-header">
         <div class="appliance-icon" style="background:${fillColor}18">${meta.icon}</div>
@@ -5587,7 +6044,7 @@ function renderRepairs(){
       <div style="margin:.625rem 0 .375rem">
         <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text3);margin-bottom:4px">
           <span>Installed ${installYear}</span>
-          <span>${pctDisplay}% of lifespan used · ${st.adjMin}–${st.adjMax} yr expected</span>
+          <span>${pctDisplay}% used · ${st.status==='overdue'?`past by ${st.age-st.adjMax} yr${st.age-st.adjMax!==1?'s':''}`:`est. <strong style="color:var(--text)">${st.estRemaining} yr${st.estRemaining!==1?'s':''}</strong> remaining`}</span>
         </div>
         <div style="height:7px;background:var(--surface2);border-radius:4px;overflow:hidden;position:relative">
           <div style="height:100%;width:${pctDisplay}%;background:${fillColor};border-radius:4px;transition:width .5s ease"></div>
@@ -5598,10 +6055,11 @@ function renderRepairs(){
       </div>
 
       <!-- Stats row -->
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:.75rem">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin-bottom:.75rem">
         <div class="appliance-stat"><div class="appliance-stat-label">Age</div><div class="appliance-stat-value">${st.age} yr${st.age!==1?'s':''}</div></div>
         <div class="appliance-stat"><div class="appliance-stat-label">Condition</div><div class="appliance-stat-value">${condLabel}</div></div>
-        <div class="appliance-stat"><div class="appliance-stat-label">Replace cost</div><div class="appliance-stat-value" style="font-size:12px">$${lo.toLocaleString()}–$${hi.toLocaleString()}</div></div>
+        <div class="appliance-stat"><div class="appliance-stat-label">Est. left</div><div class="appliance-stat-value">${st.status==='overdue'?'0 yrs':st.estRemaining+' yr'+(st.estRemaining!==1?'s':'')}</div></div>
+        <div class="appliance-stat"><div class="appliance-stat-label">Replace cost</div><div class="appliance-stat-value" style="font-size:11px">$${lo.toLocaleString()}–$${hi.toLocaleString()}</div></div>
       </div>
 
       <!-- Message -->
@@ -5635,9 +6093,10 @@ function openAddAppliance(){
   document.getElementById('ap-year').value='';
   document.getElementById('ap-brand').value='';
   document.getElementById('ap-condition').value='good';
-  document.getElementById('ap-serviced').value='';
   document.getElementById('ap-notes').value='';
   document.getElementById('ap-lifespan-hint').style.display='none';
+  currentServiceLog=[];
+  renderServiceLogList();
   document.getElementById('appliance-modal').classList.add('open');
 }
 
@@ -5650,8 +6109,9 @@ function editAppliance(id){
   document.getElementById('ap-year').value=ap.year||'';
   document.getElementById('ap-brand').value=ap.brand||'';
   document.getElementById('ap-condition').value=ap.condition||'good';
-  document.getElementById('ap-serviced').value=ap.serviced||'';
   document.getElementById('ap-notes').value=ap.notes||'';
+  currentServiceLog=(ap.serviceLog||[]).slice();
+  renderServiceLogList();
   onApplianceTypeChange();
   document.getElementById('appliance-modal').classList.add('open');
 }
@@ -5675,6 +6135,44 @@ function onApplianceTypeChange(){
   hint.innerHTML=`<strong>Typical lifespan:</strong> ${meta.lifespan[0]}–${meta.lifespan[1]} years &nbsp;·&nbsp; <strong>Replacement cost:</strong> $${meta.costLow.toLocaleString()}–$${meta.costHigh.toLocaleString()} &nbsp;·&nbsp; ${meta.tip}`;
 }
 
+let currentServiceLog=[];
+
+function renderServiceLogList(){
+  const el=document.getElementById('ap-service-log-list');
+  if(!el)return;
+  if(!currentServiceLog.length){
+    el.innerHTML='<div style="font-size:11px;color:var(--text3)">No records yet — log any tune-ups, repairs, or replacements to sharpen the estimate.</div>';
+    return;
+  }
+  el.innerHTML=currentServiceLog.map((e,i)=>{
+    const t=SERVICE_TYPES[e.type]||SERVICE_TYPES.routine;
+    return`<div style="display:flex;align-items:center;gap:8px;font-size:12px;background:var(--surface2);border-radius:var(--radius-xs);padding:.375rem .625rem">
+      <span>${t.icon}</span>
+      <span style="font-weight:600">${e.year}</span>
+      <span style="flex:1;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t.label}${e.note?' — '+e.note:''}</span>
+      <span style="color:var(--teal);font-size:11px;flex-shrink:0">${t.ext>0?'+'+t.ext+' yr':'—'}</span>
+      <button type="button" class="btn btn-danger-soft btn-sm" style="padding:1px 6px;font-size:11px;flex-shrink:0" onclick="removeServiceLogEntry(${i})">✕</button>
+    </div>`;
+  }).join('');
+}
+
+function addServiceLogEntry(){
+  const year=parseInt(document.getElementById('ap-log-year').value);
+  const type=document.getElementById('ap-log-type').value;
+  const note=document.getElementById('ap-log-note').value.trim();
+  if(!year||year<1950||year>new Date().getFullYear()){alert('Please enter a valid year for the service record.');return;}
+  currentServiceLog.push({year,type,note});
+  currentServiceLog.sort((a,b)=>b.year-a.year);
+  document.getElementById('ap-log-year').value='';
+  document.getElementById('ap-log-note').value='';
+  renderServiceLogList();
+}
+
+function removeServiceLogEntry(i){
+  currentServiceLog.splice(i,1);
+  renderServiceLogList();
+}
+
 function saveAppliance(){
   const type=document.getElementById('ap-type').value;
   const year=parseInt(document.getElementById('ap-year').value);
@@ -5688,7 +6186,8 @@ function saveAppliance(){
     year,
     brand:document.getElementById('ap-brand').value.trim(),
     condition:document.getElementById('ap-condition').value,
-    serviced:parseInt(document.getElementById('ap-serviced').value)||null,
+    serviceLog:currentServiceLog.slice(),
+    serviced:currentServiceLog.length?Math.max(...currentServiceLog.map(e=>e.year)):null,
     notes:document.getElementById('ap-notes').value.trim()
   };
   if(editApplianceId){
@@ -5703,6 +6202,435 @@ function saveAppliance(){
 }
 
 document.getElementById('appliance-modal').addEventListener('click',function(e){if(e.target===this)closeApplianceModal();});
+
+// ─── Maintenance Reminders ──────────────────────────────────────────────────
+const REMINDERS_KEY='hb3_reminders';
+const REMINDER_CATEGORIES={
+  safety:     {label:'Safety',              icon:'🛟'},
+  hvac:       {label:'HVAC & Air',          icon:'❄️'},
+  plumbing:   {label:'Plumbing & Water',    icon:'🚿'},
+  exterior:   {label:'Exterior & Structural',icon:'🏠'},
+  appliances: {label:'Appliances',          icon:'🧺'},
+  other:      {label:'Other',               icon:'🔧'}
+};
+
+const DEFAULT_REMINDERS=[
+  {name:'Replace HVAC filter',category:'hvac',freqValue:2,freqUnit:'months',notes:'1–3 months depending on filter type and pets',infoKey:'hvac_filter'},
+  {name:'HVAC tune-up (heating & cooling)',category:'hvac',freqValue:12,freqUnit:'months',infoKey:'hvac_tuneup'},
+  {name:'Clean dryer vent',category:'hvac',freqValue:6,freqUnit:'months',infoKey:'dryer_vent'},
+  {name:'Test smoke & CO detectors',category:'safety',freqValue:1,freqUnit:'months',notes:'Quick monthly test button-press; replace batteries every 6 months',infoKey:'smoke_co'},
+  {name:'Test GFCI outlets',category:'safety',freqValue:6,freqUnit:'months',infoKey:'gfci'},
+  {name:'Check fire extinguisher(s)',category:'safety',freqValue:12,freqUnit:'months',infoKey:'fire_extinguisher'},
+  {name:'Flush water heater',category:'plumbing',freqValue:12,freqUnit:'months',infoKey:'water_heater_flush'},
+  {name:'Replace water heater anode rod',category:'plumbing',freqValue:4,freqUnit:'years',notes:'Every 3–5 years',infoKey:'anode_rod'},
+  {name:'Replace washer supply hoses',category:'plumbing',freqValue:5,freqUnit:'years',infoKey:'washer_hoses'},
+  {name:'Check for plumbing leaks',category:'plumbing',freqValue:6,freqUnit:'months',infoKey:'plumbing_leaks'},
+  {name:'Test sump pump',category:'plumbing',freqValue:6,freqUnit:'months',infoKey:'sump_pump'},
+  {name:'Clean gutters',category:'exterior',freqValue:6,freqUnit:'months',notes:'Spring & fall',infoKey:'gutters'},
+  {name:'Inspect roof',category:'exterior',freqValue:6,freqUnit:'months',infoKey:'roof_inspect'},
+  {name:'Check caulking (windows, doors, tub)',category:'exterior',freqValue:6,freqUnit:'months',infoKey:'caulking'},
+  {name:'Check weatherstripping',category:'exterior',freqValue:12,freqUnit:'months',infoKey:'weatherstripping'},
+  {name:'Trim trees & shrubs away from house',category:'exterior',freqValue:12,freqUnit:'months',infoKey:'trim_trees'},
+  {name:'Pressure wash siding',category:'exterior',freqValue:12,freqUnit:'months',infoKey:'pressure_wash'},
+  {name:'Check drainage/grading around foundation',category:'exterior',freqValue:12,freqUnit:'months',infoKey:'drainage'},
+  {name:'Seal concrete/driveway cracks',category:'exterior',freqValue:30,freqUnit:'months',notes:'Every 2–3 years',infoKey:'concrete_cracks'},
+  {name:'Lube garage door opener & tracks',category:'exterior',freqValue:12,freqUnit:'months',infoKey:'garage_door'},
+  {name:'Clean fridge condenser coils',category:'appliances',freqValue:6,freqUnit:'months',infoKey:'fridge_coils'},
+  {name:'Clean dishwasher filter',category:'appliances',freqValue:4,freqUnit:'months',notes:'Every 3–6 months',infoKey:'dishwasher_filter'}
+];
+
+// Plain-English explanations of what each task is and how to do it, shown in
+// the hover/tap info tooltip on each reminder card.
+const TASK_INFO={
+  hvac_filter:{title:'Replace HVAC filter',desc:'The filter traps dust and debris before air enters your furnace/AC. A clogged filter forces the system to work harder and can shorten its life.',how:'Find the filter slot on your air handler or return-air grille, note the size printed on the frame, slide the old one out, and slide the new one in with the airflow arrow pointing toward the unit.'},
+  hvac_tuneup:{title:'HVAC tune-up',desc:'A professional inspection and cleaning of your furnace/AC — checks refrigerant, electrical connections, and components that filters alone can\'t address.',how:'Schedule a licensed HVAC technician, ideally once in spring (before cooling season) and once in fall (before heating season) if you want to split it into two visits.'},
+  dryer_vent:{title:'Clean dryer vent',desc:'Lint builds up inside the exhaust duct that runs from your dryer to the outside — a leading cause of house fires when it accumulates.',how:'Unplug the dryer, disconnect the vent hose from the back, and vacuum out lint from both the dryer port and the wall duct. A vent-cleaning brush kit makes long runs easier.'},
+  smoke_co:{title:'Test smoke & CO detectors',desc:'Smoke and carbon monoxide detectors sound an alarm for fire or gas leaks — but only if they\'re working.',how:'Press and hold the "test" button on each unit until it beeps. Replace batteries every 6 months (a good trick: do it when clocks change for daylight saving).'},
+  gfci:{title:'Test GFCI outlets',desc:'GFCI (ground-fault) outlets are the ones with "Test" and "Reset" buttons, usually in kitchens, bathrooms, garages, and outdoors — they shut off power to prevent shock near water.',how:'Press "Test" — power to the outlet should cut off (plug in a lamp first to confirm). Press "Reset" to restore power. If Test doesn\'t cut power, the outlet needs replacing.'},
+  fire_extinguisher:{title:'Check fire extinguisher',desc:'Extinguishers lose pressure over time and can expire.',how:'Check the pressure gauge — the needle should be in the green zone. Confirm the pin and tamper seal are intact, and check the expiration/service date on the label.'},
+  water_heater_flush:{title:'Flush water heater',desc:'Sediment settles at the bottom of the tank over time, reducing efficiency and shortening the heater\'s life.',how:'Turn off power/gas to the heater, connect a garden hose to the drain valve near the bottom, run it to a drain or outside, open the valve and let the tank drain, then flush with a bit of fresh water until it runs clear.'},
+  anode_rod:{title:'Replace anode rod',desc:'The anode rod is a sacrificial metal rod inside the tank that attracts corrosion so the tank itself doesn\'t rust out.',how:'Locate the hex head on top of the water heater (may be under a cap), remove it with a socket wrench, pull out the old rod, and install a new one. This is a bit more involved — many people call a plumber for this one.'},
+  washer_hoses:{title:'Replace washer supply hoses',desc:'The rubber hoses feeding your washing machine can crack or burst with age, causing major water damage.',how:'Turn off the water valves behind the washer, unscrew the old hoses, and screw on new ones (braided stainless steel hoses last longer than plain rubber). Hand-tighten, then a quarter turn with pliers.'},
+  plumbing_leaks:{title:'Check for plumbing leaks',desc:'Small leaks under sinks, around toilets, or at supply valves can go unnoticed until they cause real damage.',how:'Look under every sink, around the base of toilets, and near the water heater for damp spots, staining, or mineral buildup. Check your water meter with everything off — if it\'s still moving, there\'s a leak somewhere.'},
+  sump_pump:{title:'Test sump pump',desc:'If you have a sump pump, it keeps your basement/crawlspace from flooding — but only works if it still turns on.',how:'Slowly pour a bucket of water into the sump pit until the float rises. The pump should kick on and drain the water. If it doesn\'t, it may need cleaning or replacing.'},
+  gutters:{title:'Clean gutters',desc:'Leaves and debris block water flow, causing overflow that can damage siding, foundations, and roofing.',how:'From a stable ladder, scoop out debris by hand or with a small trowel, then flush the gutters with a hose to check that downspouts drain freely.'},
+  roof_inspect:{title:'Inspect roof',desc:'Catching damaged or missing shingles early prevents small issues from turning into leaks.',how:'From the ground or a ladder (no need to walk the roof), look for missing/curling shingles, damaged flashing around chimneys and vents, and any sagging areas. Binoculars work well for a ground-level check.'},
+  caulking:{title:'Check caulking',desc:'Caulk is the flexible sealant around windows, door frames, and tubs/showers that keeps water and air out. It\'s the thin rope-like bead you see at the seams.',how:'Look for cracked, peeling, or missing caulk. If it\'s compromised, scrape out the old bead, clean the area, and apply a new bead with a caulk gun, smoothing it with a wet finger.'},
+  weatherstripping:{title:'Check weatherstripping',desc:'Weatherstripping is the strip of rubber, foam, or vinyl lining the edges of doors and windows that seals out drafts when they\'re closed.',how:'Close the door/window on a piece of paper — if you can pull the paper out easily, the seal is worn. Peel off old strips and press new adhesive-backed weatherstripping into place along the frame.'},
+  trim_trees:{title:'Trim trees & shrubs',desc:'Branches touching your roof or siding can trap moisture, invite pests, and cause damage in storms.',how:'Cut back any branches within a few feet of the roofline or siding using pruning shears or a pole saw. For large trees near power lines or the house, hire an arborist.'},
+  pressure_wash:{title:'Pressure wash siding',desc:'Removes built-up dirt, mildew, and algae that can degrade siding over time.',how:'Use a pressure washer on a low/wide-fan setting, working top to bottom in overlapping passes, keeping the nozzle a couple feet from the surface to avoid damage.'},
+  drainage:{title:'Check drainage/grading',desc:'The ground around your foundation should slope away from the house so water doesn\'t pool against it.',how:'After rain, walk the perimeter and look for standing water or soil that slopes toward the house. Add soil to low spots and make sure downspouts extend a few feet away from the foundation.'},
+  concrete_cracks:{title:'Seal concrete cracks',desc:'Cracks in driveways/walkways let water in, which can widen the crack when it freezes and expands.',how:'Clean out the crack with a wire brush, then fill with a concrete crack filler or caulk rated for driveways, available at any hardware store.'},
+  garage_door:{title:'Lube garage door',desc:'Moving metal parts — rollers, hinges, springs, tracks — wear out faster and get noisier without lubrication.',how:'Apply a silicone-based garage door lubricant (not WD-40, which attracts dust) to rollers, hinges, and the track, then open/close the door a few times to work it in.'},
+  fridge_coils:{title:'Clean fridge coils',desc:'The condenser coils (usually behind or underneath the fridge) release heat — when covered in dust, the compressor has to work harder.',how:'Unplug the fridge, pull it out or remove the bottom grille, and vacuum the coils with a brush attachment or a dedicated coil-cleaning brush.'},
+  dishwasher_filter:{title:'Clean dishwasher filter',desc:'A removable filter at the bottom of the tub catches food particles — when clogged, dishes come out gritty or the dishwasher smells.',how:'Twist and lift out the filter cylinder (check your manual for the exact release), rinse it under the tap, scrub off any buildup, and pop it back in.'}
+};
+
+let reminderFilter='all';
+
+// Fallback: map task name -> infoKey, for reminders saved before infoKey existed
+const NAME_TO_INFOKEY={};
+DEFAULT_REMINDERS.forEach(r=>{NAME_TO_INFOKEY[r.name]=r.infoKey;});
+
+function getReminderInfo(r){
+  const key=r.infoKey||NAME_TO_INFOKEY[r.name];
+  return key?TASK_INFO[key]:null;
+}
+
+let _tipEl=null;
+function ensureTipEl(){
+  if(!_tipEl){
+    _tipEl=document.createElement('div');
+    _tipEl.id='hb-info-tip';
+    document.body.appendChild(_tipEl);
+  }
+  return _tipEl;
+}
+function showInfoTip(evt,key){
+  const info=TASK_INFO[key];
+  if(!info)return;
+  const el=ensureTipEl();
+  el.innerHTML=`<div class="info-tip-title">${info.title}</div><div>${info.desc}</div>${info.how?`<div class="info-tip-how"><strong>How:</strong> ${info.how}</div>`:''}`;
+  el.style.display='block';
+  positionInfoTip(evt.currentTarget,el);
+}
+function hideInfoTip(){
+  if(_tipEl)_tipEl.style.display='none';
+}
+function positionInfoTip(anchor,el){
+  const rect=anchor.getBoundingClientRect();
+  const tipRect=el.getBoundingClientRect();
+  let top=rect.top-tipRect.height-8;
+  let left=rect.left+rect.width/2-tipRect.width/2;
+  if(top<8)top=rect.bottom+8;
+  if(left<8)left=8;
+  if(left+tipRect.width>window.innerWidth-8)left=window.innerWidth-tipRect.width-8;
+  el.style.top=top+'px';
+  el.style.left=left+'px';
+}
+document.addEventListener('click',function(e){
+  if(_tipEl&&_tipEl.style.display==='block'&&!e.target.classList.contains('info-tip-icon')){
+    hideInfoTip();
+  }
+});
+
+// ── Toast notifications (used for "mark complete" confirmations) ──────────
+let _toastTimer=null;
+function ensureToastWrap(){
+  let wrap=document.getElementById('reminder-toast-wrap');
+  if(!wrap){wrap=document.createElement('div');wrap.id='reminder-toast-wrap';document.body.appendChild(wrap);}
+  return wrap;
+}
+function showReminderToast(opts){
+  const wrap=ensureToastWrap();
+  wrap.innerHTML='';
+  const el=document.createElement('div');
+  el.className='reminder-toast';
+  el.innerHTML=`<span class="toast-icon">${opts.icon||'✓'}</span><div style="flex:1"><div>${opts.text}</div>${opts.undo?'<div class="toast-actions"><button class="toast-link" id="reminder-toast-undo">Undo</button></div>':''}</div><span class="toast-close" onclick="this.closest('.reminder-toast').remove()">✕</span>`;
+  wrap.appendChild(el);
+  if(opts.undo){
+    el.querySelector('#reminder-toast-undo').onclick=()=>{opts.undo();el.remove();};
+  }
+  clearTimeout(_toastTimer);
+  _toastTimer=setTimeout(()=>{if(el.parentNode)el.remove();},7000);
+}
+
+// ── Category collapse state ────────────────────────────────────────────────
+const REMINDER_COLLAPSED_KEY='hb3_reminders_collapsed';
+function getCollapsedCats(){return JSON.parse(localStorage.getItem(REMINDER_COLLAPSED_KEY)||'[]');}
+function toggleCatGroup(catKey){
+  const collapsed=getCollapsedCats();
+  const idx=collapsed.indexOf(catKey);
+  if(idx>-1)collapsed.splice(idx,1);else collapsed.push(catKey);
+  localStorage.setItem(REMINDER_COLLAPSED_KEY,JSON.stringify(collapsed));
+  const header=document.querySelector(`.reminder-cat-header[data-cat="${catKey}"]`);
+  const body=document.getElementById('cat-body-'+catKey);
+  if(header)header.classList.toggle('collapsed');
+  if(body)body.classList.toggle('collapsed');
+}
+
+function loadReminders(){return JSON.parse(localStorage.getItem(REMINDERS_KEY)||'null');}
+function saveReminders(arr){localStorage.setItem(REMINDERS_KEY,JSON.stringify(arr));}
+
+function ensureRemindersSeeded(){
+  const existing=loadReminders();
+  if(existing)return;
+  const seeded=DEFAULT_REMINDERS.map((r,i)=>({id:Date.now()+i,lastCompleted:null,custom:false,...r}));
+  saveReminders(seeded);
+}
+
+function freqToDays(r){return r.freqUnit==='years'?r.freqValue*365:r.freqValue*30.44;}
+
+function formatFreq(r){
+  const val=r.freqValue;
+  const unit=r.freqUnit==='years'?(val===1?'year':'years'):(val===1?'month':'months');
+  return`Every ${val} ${unit}`;
+}
+
+function getReminderStatus(r){
+  const freqDays=freqToDays(r);
+  if(!r.lastCompleted){
+    return{status:'new',pct:0,daysUntil:null,nextDue:null,elapsedDays:null};
+  }
+  const last=new Date(r.lastCompleted+'T00:00:00');
+  const now=new Date();
+  const elapsedDays=Math.floor((now-last)/86400000);
+  const pct=Math.max(0,Math.min(elapsedDays/freqDays,1));
+  const nextDue=new Date(last.getTime()+freqDays*86400000);
+  const daysUntil=Math.round((nextDue-now)/86400000);
+  let status;
+  if(elapsedDays>=freqDays)status='overdue';
+  else if(elapsedDays>=freqDays*0.85)status='soon';
+  else status='good';
+  return{status,pct,daysUntil,nextDue,elapsedDays};
+}
+
+function fmtDate(d){
+  if(!d)return'';
+  return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+}
+
+function todayStr(){return new Date().toISOString().split('T')[0];}
+
+function setReminderFilter(f,btn){
+  reminderFilter=f;
+  document.querySelectorAll('.reminders-filter-btn').forEach(b=>b.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  renderReminders();
+}
+
+const REMINDER_CAT_ORDER=['safety','hvac','plumbing','exterior','appliances','other'];
+
+function renderReminders(){
+  ensureRemindersSeeded();
+  const all=loadReminders();
+  const withStatus=all.map(r=>({r,st:getReminderStatus(r)}));
+
+  // Stat pills
+  const overdueCount=withStatus.filter(x=>x.st.status==='overdue').length;
+  const soonCount=withStatus.filter(x=>x.st.status==='soon').length;
+  const newCount=withStatus.filter(x=>x.st.status==='new').length;
+  const pillsEl=document.getElementById('reminders-stat-pills');
+  pillsEl.innerHTML=`
+    <div class="metric-card blue"><div class="metric-label">Total Reminders</div><div class="metric-value">${all.length}</div><div class="metric-sub">Click + to add more</div></div>
+    <div class="metric-card ${overdueCount?'red':'green'}"><div class="metric-label">Overdue</div><div class="metric-value ${overdueCount?'red':'green'}">${overdueCount}</div><div class="metric-sub">${overdueCount?'Worth catching up on':'Nothing overdue'}</div></div>
+    <div class="metric-card amber"><div class="metric-label">Due Soon</div><div class="metric-value amber">${soonCount}</div><div class="metric-sub">Within 15% of the interval</div></div>
+    <div class="metric-card"><div class="metric-label">Not Logged Yet</div><div class="metric-value">${newCount}</div><div class="metric-sub">No completion date on file</div></div>`;
+
+  // Badge on sidebar
+  const badge=document.getElementById('reminders-badge');
+  const urgent=overdueCount+soonCount;
+  badge.textContent=urgent;
+  badge.style.display=urgent?'flex':'none';
+
+  // Filter
+  let filtered=withStatus;
+  if(reminderFilter!=='all')filtered=withStatus.filter(x=>x.st.status===reminderFilter);
+
+  const grid=document.getElementById('reminders-grid');
+  const empty=document.getElementById('reminders-empty');
+  if(!filtered.length){
+    grid.style.display='none';
+    empty.style.display='block';
+    return;
+  }
+  grid.style.display='block';
+  empty.style.display='none';
+
+  // Group by category
+  const groups={};
+  filtered.forEach(x=>{
+    const c=REMINDER_CATEGORIES[x.r.category]?x.r.category:'other';
+    (groups[c]=groups[c]||[]).push(x);
+  });
+  const order={overdue:0,soon:1,new:2,good:3};
+  const collapsedCats=getCollapsedCats();
+
+  grid.innerHTML=REMINDER_CAT_ORDER.filter(c=>groups[c]&&groups[c].length).map(catKey=>{
+    const items=groups[catKey];
+    items.sort((a,b)=>order[a.st.status]-order[b.st.status]||a.r.name.localeCompare(b.r.name));
+    const cat=REMINDER_CATEGORIES[catKey];
+    const collapsed=collapsedCats.includes(catKey);
+    return`<div class="reminder-cat-group">
+      <div class="reminder-cat-header ${collapsed?'collapsed':''}" data-cat="${catKey}" onclick="toggleCatGroup('${catKey}')">
+        <span class="cat-icon">${cat.icon}</span>
+        <span class="cat-title">${cat.label}</span>
+        <span class="cat-count">${items.length}</span>
+        <span class="cat-chevron">▾</span>
+      </div>
+      <div class="reminder-cat-body ${collapsed?'collapsed':''}" id="cat-body-${catKey}">
+        ${items.map(({r,st})=>renderReminderCard(r,st)).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderReminderCard(r,st){
+  const fillColor={good:'var(--green)',soon:'var(--amber)',overdue:'var(--red)',new:'var(--text3)'}[st.status];
+  const statusLabel={good:'On track',soon:'Due soon',overdue:'Overdue',new:'Not logged yet'}[st.status];
+  const pctDisplay=Math.round(st.pct*100);
+  const info=getReminderInfo(r);
+  const infoKey=r.infoKey||NAME_TO_INFOKEY[r.name];
+  let dueText;
+  if(st.status==='new')dueText='Log a completion date to start tracking';
+  else if(st.status==='overdue')dueText=`<span style="color:var(--red);font-weight:600">Overdue by ${Math.abs(st.daysUntil)} day${Math.abs(st.daysUntil)!==1?'s':''}</span>`;
+  else dueText=`Next due ${fmtDate(st.nextDue)} <span style="color:var(--text3)">(${st.daysUntil} day${st.daysUntil!==1?'s':''})</span>`;
+  return`<div class="appliance-card status-${st.status==='new'?'watch':st.status==='soon'?'soon':st.status==='overdue'?'overdue':'good'}">
+      <div class="appliance-header">
+        <div class="appliance-icon" style="background:${fillColor}18">${(REMINDER_CATEGORIES[r.category]||REMINDER_CATEGORIES.other).icon}</div>
+        <div style="flex:1;min-width:0">
+          <div class="appliance-name" style="display:flex;align-items:center;gap:6px">
+            <span>${r.name}</span>
+            ${info?`<span class="info-tip-icon" tabindex="0" onmouseenter="showInfoTip(event,'${infoKey}')" onmouseleave="hideInfoTip()" onfocus="showInfoTip(event,'${infoKey}')" onblur="hideInfoTip()" onclick="event.stopPropagation();showInfoTip(event,'${infoKey}')">i</span>`:''}
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+          <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;background:${fillColor}18;color:${fillColor};text-transform:uppercase;letter-spacing:.04em">${statusLabel}</span>
+          <div style="display:flex;gap:4px">
+            <button class="btn btn-ghost btn-sm" style="padding:3px 8px;font-size:11px" onclick="editReminder(${r.id})">Edit</button>
+            <button class="btn btn-danger-soft btn-sm" style="padding:3px 8px;font-size:11px" onclick="deleteReminder(${r.id})">✕</button>
+          </div>
+        </div>
+      </div>
+
+      ${st.status!=='new'?`<div style="margin:.625rem 0 .375rem">
+        <div style="height:7px;background:var(--surface2);border-radius:4px;overflow:hidden">
+          <div style="height:100%;width:${Math.min(pctDisplay,100)}%;background:${fillColor};border-radius:4px;transition:width .5s ease"></div>
+        </div>
+      </div>`:''}
+
+      <div style="font-size:12px;color:var(--text2);margin-bottom:.625rem">${dueText}</div>
+
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:.625rem">
+        <label style="font-size:11px;color:var(--text3)">Last completed:</label>
+        <input type="date" class="form-input" style="padding:5px 8px;font-size:12px" value="${r.lastCompleted||''}" onchange="updateReminderDate(${r.id},this.value)"/>
+        <button class="btn btn-primary btn-sm" style="font-size:11px;padding:4px 10px" onclick="markReminderComplete(${r.id})">✓ Mark complete today</button>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:11px;color:var(--text3)">
+        <span>Repeat every</span>
+        <input type="number" min="1" class="form-input" style="width:56px;padding:5px 8px;font-size:12px" value="${r.freqValue}" onchange="updateReminderFreq(${r.id},this.value,null)"/>
+        <select class="form-select" style="padding:5px 8px;font-size:12px" onchange="updateReminderFreq(${r.id},null,this.value)">
+          <option value="months" ${r.freqUnit==='months'?'selected':''}>months</option>
+          <option value="years" ${r.freqUnit==='years'?'selected':''}>years</option>
+        </select>
+      </div>
+      ${r.notes?`<div style="font-size:11px;color:var(--text3);margin-top:.5rem;padding:.375rem .625rem;background:var(--surface2);border-radius:var(--radius-xs)">📝 ${r.notes}</div>`:''}
+    </div>`;
+}
+
+function updateReminderDate(id,val){
+  const arr=loadReminders();
+  const idx=arr.findIndex(r=>r.id===id);
+  if(idx<0)return;
+  arr[idx].lastCompleted=val||null;
+  saveReminders(arr);
+  renderReminders();
+}
+
+function markReminderComplete(id){
+  const arr=loadReminders();
+  const idx=arr.findIndex(r=>r.id===id);
+  if(idx<0)return;
+  const prevDate=arr[idx].lastCompleted;
+  const name=arr[idx].name;
+  arr[idx].lastCompleted=todayStr();
+  saveReminders(arr);
+  renderReminders();
+  const st=getReminderStatus(arr[idx]);
+  const nextDueText=st.nextDue?` Next due ${fmtDate(st.nextDue)}.`:'';
+  showReminderToast({
+    icon:'✅',
+    text:`<strong>${name}</strong> marked complete — now <strong>On Track</strong>.${nextDueText}`,
+    undo:()=>{
+      const arr2=loadReminders();
+      const i2=arr2.findIndex(r=>r.id===id);
+      if(i2>-1){arr2[i2].lastCompleted=prevDate;saveReminders(arr2);renderReminders();}
+    }
+  });
+}
+
+function updateReminderFreq(id,value,unit){
+  const arr=loadReminders();
+  const idx=arr.findIndex(r=>r.id===id);
+  if(idx<0)return;
+  if(value!==null){
+    const n=parseInt(value);
+    if(!n||n<1)return;
+    arr[idx].freqValue=n;
+  }
+  if(unit!==null)arr[idx].freqUnit=unit;
+  saveReminders(arr);
+  renderReminders();
+}
+
+let editReminderId=null;
+
+function openAddReminder(){
+  editReminderId=null;
+  document.getElementById('reminder-modal-title').textContent='Add Reminder';
+  document.getElementById('rem-name').value='';
+  document.getElementById('rem-category').value='other';
+  document.getElementById('rem-freq-value').value=3;
+  document.getElementById('rem-freq-unit').value='months';
+  document.getElementById('rem-last-completed').value='';
+  document.getElementById('rem-notes').value='';
+  document.getElementById('reminder-modal').classList.add('open');
+}
+
+function editReminder(id){
+  const arr=loadReminders();
+  const r=arr.find(x=>x.id===id);
+  if(!r)return;
+  editReminderId=id;
+  document.getElementById('reminder-modal-title').textContent='Edit Reminder';
+  document.getElementById('rem-name').value=r.name||'';
+  document.getElementById('rem-category').value=r.category||'other';
+  document.getElementById('rem-freq-value').value=r.freqValue||3;
+  document.getElementById('rem-freq-unit').value=r.freqUnit||'months';
+  document.getElementById('rem-last-completed').value=r.lastCompleted||'';
+  document.getElementById('rem-notes').value=r.notes||'';
+  document.getElementById('reminder-modal').classList.add('open');
+}
+
+function closeReminderModal(){document.getElementById('reminder-modal').classList.remove('open');}
+
+function saveReminderModal(){
+  const name=document.getElementById('rem-name').value.trim();
+  const freqValue=parseInt(document.getElementById('rem-freq-value').value);
+  if(!name){alert('Please enter a task name.');return;}
+  if(!freqValue||freqValue<1){alert('Please enter a valid repeat interval.');return;}
+  const arr=loadReminders();
+  const rem={
+    id:editReminderId||Date.now(),
+    name,
+    category:document.getElementById('rem-category').value,
+    freqValue,
+    freqUnit:document.getElementById('rem-freq-unit').value,
+    lastCompleted:document.getElementById('rem-last-completed').value||null,
+    notes:document.getElementById('rem-notes').value.trim(),
+    custom:true
+  };
+  if(editReminderId){
+    const idx=arr.findIndex(r=>r.id===editReminderId);
+    if(idx>-1)rem.custom=arr[idx].custom; // preserve original custom flag
+    if(idx>-1)arr[idx]=rem;
+  } else {
+    arr.push(rem);
+  }
+  saveReminders(arr);
+  closeReminderModal();
+  renderReminders();
+}
+
+function deleteReminder(id){
+  if(!confirm('Remove this reminder? You can always re-add it later.'))return;
+  const arr=loadReminders().filter(r=>r.id!==id);
+  saveReminders(arr);
+  renderReminders();
+}
+
+document.getElementById('reminder-modal').addEventListener('click',function(e){if(e.target===this)closeReminderModal();});
 
 // ─── Glossary ─────────────────────────────────────────────────────────────────
 let glossaryFilter='all';
@@ -6254,7 +7182,7 @@ function showInspectionResults(data){
   const overallColor=data.overallCondition==='good'?'var(--green)':data.overallCondition==='fair'?'var(--amber)':'var(--red)';
   const overallBg=data.overallCondition==='good'?'var(--green-bg)':data.overallCondition==='fair'?'var(--amber-bg)':'var(--red-bg)';
   const overallBorder=data.overallCondition==='good'?'var(--green-border)':data.overallCondition==='fair'?'var(--amber-border)':'var(--red-border)';
-  const overallLabel=data.overallCondition==='good'?'Good Overall':data.overallCondition==='fair'?'Some Items to Watch':'Needs Attention';
+  const overallLabel=data.overallCondition==='good'?'Good Overall':data.overallCondition==='fair'?'Some Items to Watch':'Items Requiring Attention';
 
   // ── Autofill panel ──
   const af=data.autofill||{};
@@ -6304,6 +7232,8 @@ function showInspectionResults(data){
 
   // ── Sections ──
   const sectionsEl=document.getElementById('insp-sections');
+  const hasSections=(data.sections||[]).length>0;
+  const repairItems=data.repairItems||[];
 
   // Overall banner first
   sectionsEl.innerHTML=`
@@ -6314,7 +7244,7 @@ function showInspectionResults(data){
         <div style="font-size:13px;color:var(--text2);line-height:1.65">${data.overallSummary||''}</div>
       </div>
     </div>
-    ${(data.sections||[]).map((s,i)=>{
+    ${hasSections?(data.sections||[]).map((s,i)=>{
       const badgeCls=s.condition==='good'?'insp-badge-good':s.condition==='fair'?'insp-badge-fair':'insp-badge-attention';
       const badgeLabel=s.condition==='good'?'Good':s.condition==='fair'?'Fair':'Needs Attention';
       const items=(s.items||[]).map(it=>`
@@ -6334,7 +7264,24 @@ function showInspectionResults(data){
           <div class="insp-items">${items}</div>
         </div>
       </div>`;
-    }).join('')}`;
+    }).join(''):
+    `${repairItems.length?`<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:1.25rem">
+        <div style="background:var(--surface2);padding:.75rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+          <div style="font-size:13px;font-weight:600;color:var(--text)">📋 Items from your inspection report</div>
+          <span style="font-size:11px;color:var(--text3)">${repairItems.length} item${repairItems.length!==1?'s':''}</span>
+        </div>
+        <div style="padding:.75rem 1.25rem;display:flex;flex-direction:column;gap:6px">
+          ${repairItems.map(r=>`<div style="display:flex;gap:8px;font-size:13px;color:var(--text2);padding:.375rem 0;border-bottom:.5px solid var(--border)"><span style="color:var(--accent);flex-shrink:0">→</span><span>${r}</span></div>`).join('')}
+        </div>
+      </div>`:''}
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem 1.5rem;display:flex;align-items:flex-start;gap:12px">
+      <div style="font-size:20px;flex-shrink:0">🔍</div>
+      <div>
+        <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px">Upload again for the full section-by-section breakdown</div>
+        <div style="font-size:12px;color:var(--text2);line-height:1.65;margin-bottom:.75rem">Your report was processed during setup to extract home details. Re-upload here for the complete plain-English analysis with condition ratings for each system.</div>
+        <button class="btn btn-primary btn-sm" onclick="resetInspection()">↺ Re-upload for full analysis</button>
+      </div>
+    </div>`}`;
 }
 
 function toggleInspSection(bodyId,headerEl){
@@ -6406,7 +7353,34 @@ function resetInspection(){
 
 
 migrateUtilities();
+
+// ── Migrate wizard inspection data into Document Vault ───────────────────────
+// Runs once on startup — if user completed wizard with inspection report but it
+// wasn't saved to the vault (pre-fix), this creates the vault entry retroactively
+(function migrateInspectionToVault(){
+  const inspData=loadInspection();
+  if(!inspData) return;
+  const docs=loadDocs();
+  const alreadyInVault=docs.some(d=>d.type==='inspection');
+  if(alreadyInVault) return;
+  const inspDoc={
+    id:Date.now(),
+    name:inspData.filename||'Home Inspection Report',
+    type:'inspection',
+    size:null,
+    mimeType:'application/pdf',
+    base64:null,
+    uploaded:new Date().toISOString().split('T')[0],
+    analysis:JSON.stringify(inspData),
+    summary:inspData.overallSummary||'Uploaded during setup wizard'
+  };
+  docs.push(inspDoc);
+  saveDocs(docs);
+})();
+
 renderDashboard();
+ensureRemindersSeeded();
+renderReminders();
 window.addEventListener('DOMContentLoaded',()=>{
   pinInit();
   if(localStorage.getItem('hb3_notif')==='1') scheduleNotifications();
@@ -6479,8 +7453,31 @@ function obFinish(){
   const budget=document.getElementById('ob-hidden-budget')?.value||'';
   const clearChoice=document.getElementById('ob-hidden-cleardata')?.value||'keep';
 
-  const profile={name:nickname||'My Home',state,zip,sqft,year,occupants,heating,cooling,wh,solar,type,own,roof,electricalPanel,plumbing,foundation,goal,budget};
+  // Merge with existing profile so inspection autofill data (year, sqft, systems, appliances)
+  // saved during the wizard isn't clobbered by re-reading potentially-empty form fields
+  const {bills:existBills,hist:existHist,profile:existingProfile}=load();
   let {bills,hist}=load();
+  const profile={
+    ...existingProfile,  // keep anything already saved (e.g. from obInspApplyAll)
+    name:nickname||existingProfile.name||'My Home',
+    state:state||existingProfile.state||'',
+    zip:zip||existingProfile.zip||'',
+    sqft:sqft||existingProfile.sqft||'',
+    year:year||existingProfile.year||'',
+    occupants:occupants||existingProfile.occupants||'',
+    heating:heating||existingProfile.heating||'',
+    cooling:cooling||existingProfile.cooling||'',
+    wh:wh||existingProfile.wh||'',
+    solar:solar||existingProfile.solar||'No',
+    type:type||existingProfile.type||'',
+    own:own||existingProfile.own||'Own',
+    roof:roof||existingProfile.roof||'',
+    electricalPanel:electricalPanel||existingProfile.electricalPanel||'',
+    plumbing:plumbing||existingProfile.plumbing||'',
+    foundation:foundation||existingProfile.foundation||'',
+    goal:goal||existingProfile.goal||'',
+    budget:budget||existingProfile.budget||''
+  };
 
   // Clear sample data if requested
   if(clearChoice==='clear'){
@@ -6777,15 +7774,42 @@ For repairItems list the top 20 most important repair needs, deficiencies, or sa
 function obInspShowReview(data){
   document.getElementById('ob-insp-review').style.display='block';
 
-  // Overall verdict
-  const vColor=data.overallCondition==='good'?'var(--green)':data.overallCondition==='fair'?'var(--amber)':'var(--red)';
-  const vBg=data.overallCondition==='good'?'var(--green-bg)':data.overallCondition==='fair'?'var(--amber-bg)':'var(--red-bg)';
-  const vBorder=data.overallCondition==='good'?'var(--green-border)':data.overallCondition==='fair'?'var(--amber-border)':'var(--red-border)';
-  const vLabel=data.overallCondition==='good'?'✓ Good overall':data.overallCondition==='fair'?'⚠ Some items to watch':'⚠ Needs attention';
-  document.getElementById('ob-insp-verdict').style.cssText=`background:${vBg};border:1px solid ${vBorder};border-radius:var(--radius-sm);padding:.875rem 1rem;margin-bottom:1rem;`;
-  document.getElementById('ob-insp-verdict').innerHTML=`<div style="font-size:13px;font-weight:700;color:${vColor};margin-bottom:4px">${vLabel}</div><div style="font-size:13px;color:var(--text2);line-height:1.65">${data.overallSummary||''}</div>`;
+  // ── Verdict banner: always calm and welcoming — this is setup, not a debrief ──
+  // The detailed repair/safety findings are saved to the journal silently.
+  // We show a warm confirmation instead of a red "Needs Attention" banner.
+  const itemCount=(data.extractedItems||[]).length;
+  const repairCount=(data.repairItems||[]).length;
+  document.getElementById('ob-insp-verdict').style.cssText=`background:var(--accent-bg);border:1px solid var(--accent-border);border-radius:var(--radius-sm);padding:.875rem 1rem;margin-bottom:1rem;`;
+  document.getElementById('ob-insp-verdict').innerHTML=`
+    <div style="display:flex;align-items:flex-start;gap:10px">
+      <div style="font-size:20px;flex-shrink:0">🏡</div>
+      <div>
+        <div style="font-size:13px;font-weight:600;color:var(--accent);margin-bottom:4px">Report processed — home details found</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.65">We've read your inspection report and pulled out the key details below. Review what looks right, confirm, and we'll fill everything in automatically.</div>
+        ${repairCount>0?`<div style="margin-top:.5rem;font-size:12px;color:var(--text3)">📋 ${repairCount} repair and maintenance item${repairCount!==1?'s':''} found — saved to your <strong style="color:var(--text)">Inspection Report</strong> tab for when you're ready to review them.</div>`:''}
+      </div>
+    </div>`;
 
-  // Extracted items
+  // Silently save repair items to journal — but don't show them here
+  const repairs=data.repairItems||[];
+  if(repairs.length){
+    try{
+      const journal=loadJournal();
+      // Add a single grouped entry rather than flooding the journal
+      journal.unshift({
+        id:Date.now(),
+        text:`Inspection report: ${repairs.length} item${repairs.length!==1?'s':''} flagged (${repairs.slice(0,3).join('; ')}${repairs.length>3?' + more...':''})`,
+        tag:'repair',
+        date:new Date().toISOString(),
+        repairItems:repairs  // store full list for later retrieval
+      });
+      localStorage.setItem(JOURNAL_KEY,JSON.stringify(journal));
+    }catch(e){}
+    // Keep the DOM element hidden — details are in the Inspection Report tab
+    document.getElementById('ob-insp-repairs-callout').style.display='none';
+  }
+
+  // Extracted items table — these are just factual property details (year built, sq ft, etc.)
   const items=data.extractedItems||[];
   _obInspItemStates=items.map(()=>'confirm');
 
@@ -6803,14 +7827,7 @@ function obInspShowReview(data){
         </div>
       </div>`).join('');
   } else {
-    document.getElementById('ob-insp-items').innerHTML=`<div style="padding:1rem;text-align:center;font-size:13px;color:var(--text3)">No specific data fields were extracted — review the repair items below.</div>`;
-  }
-
-  // Repair items callout
-  const repairs=data.repairItems||[];
-  if(repairs.length){
-    document.getElementById('ob-insp-repairs-callout').style.display='block';
-    document.getElementById('ob-insp-repairs-list').innerHTML=repairs.map(r=>`<div style="display:flex;gap:7px;padding:3px 0;font-size:12px"><span style="flex-shrink:0;color:var(--amber)">→</span><span>${r}</span></div>`).join('');
+    document.getElementById('ob-insp-items').innerHTML=`<div style="padding:1rem;text-align:center;font-size:13px;color:var(--text3)">No specific data fields were extracted. You can still fill in the fields below manually.</div>`;
   }
 }
 
@@ -6891,13 +7908,34 @@ function obInspApplyAll(){
   // Apply autofill to systems fields on this same step
   obInspAutofillSystems();
 
+  // Save inspection report to Document Vault so it appears in the vault and Inspection tab
+  const inspFilename=_obInspData?.filename||'Home Inspection Report';
+  const existingDocs=loadDocs();
+  const alreadyInVault=existingDocs.some(d=>d.type==='inspection');
+  if(!alreadyInVault){
+    const inspDoc={
+      id:Date.now(),
+      name:inspFilename.replace(/\.[^.]+$/,'')||'Home Inspection Report',
+      type:'inspection',
+      size:null,
+      mimeType:'application/pdf',
+      base64:null, // file data not retained from wizard flow — user can re-upload from vault for Q&A
+      uploaded:new Date().toISOString().split('T')[0],
+      analysis:JSON.stringify(_obInspData), // store the parsed JSON as the analysis
+      summary:_obInspData?.overallSummary||'Uploaded during setup wizard'
+    };
+    existingDocs.push(inspDoc);
+    saveDocs(existingDocs);
+  }
+
   // Track in wizard summary
-  obUploadedDocs.push({type:'inspection',name:_obInspData?.filename||'Inspection report'});
-  // Show success and stay on step 6 — user clicks Continue to advance
+  obUploadedDocs.push({type:'inspection',name:inspFilename});
+
+  // Show success and stay on step — user clicks Continue to advance
   const review=document.getElementById('ob-insp-review');
   if(review) review.style.display='none';
   const uploadZone=document.getElementById('ob-insp-upload-zone');
-  if(uploadZone){uploadZone.style.display='block';uploadZone.innerHTML=`<div style="font-size:22px;margin-bottom:.375rem">✓</div><div style="font-size:13px;font-weight:600;color:var(--green);margin-bottom:.25rem">Inspection report applied</div><div style="font-size:11px;color:var(--text3)">Your systems fields above have been pre-filled. You can re-upload anytime.</div>`;}
+  if(uploadZone){uploadZone.style.display='block';uploadZone.innerHTML=`<div style="font-size:22px;margin-bottom:.375rem">✓</div><div style="font-size:13px;font-weight:600;color:var(--green);margin-bottom:.25rem">Inspection report saved</div><div style="font-size:11px;color:var(--text3)">Fields filled in above. Report saved to your Document Vault and Inspection Report tab.</div>`;}
 }
 
 function obInspSkipAll(){
@@ -7046,7 +8084,7 @@ function obUpdateSummary(){
 
     <!-- STEP 2: Name -->
     <div class="ob-step" id="ob-step-2">
-      <div class="ob-step-label">Step 2 of 7</div>
+      <div class="ob-step-label">Step 2 of 6</div>
       <div class="ob-title">Let's start with you</div>
       <div class="ob-sub">Just a couple of quick things to make the dashboard feel like yours from day one.</div>
 
@@ -7059,7 +8097,7 @@ function obUpdateSummary(){
 
     <!-- STEP 3: Goals & Budget -->
     <div class="ob-step" id="ob-step-3">
-      <div class="ob-step-label">Step 3 of 7</div>
+      <div class="ob-step-label">Step 3 of 6</div>
       <div class="ob-title">What matters most to you?</div>
       <div class="ob-sub">This helps HomeBase surface the right things first — so your dashboard feels immediately useful, not overwhelming.</div>
 
@@ -7113,11 +8151,111 @@ function obUpdateSummary(){
     </div>
 
     <!-- STEP 4: Home Details -->
+    <!-- STEP 4: Inspection Upload + Home Details + Systems (merged) -->
     <div class="ob-step" id="ob-step-4">
-      <div class="ob-step-label">Step 5 of 7</div>
+      <div class="ob-step-label">Step 4 of 6</div>
       <div class="ob-title">About your home</div>
-      <div class="ob-sub">This unlocks your <strong style="color:var(--text)">Home Health Score</strong> and personalised recommendations. Fields your inspection report mentioned have been pre-filled — just confirm or adjust.</div>
+      <div class="ob-sub">The fastest way through this step: upload your inspection report and we'll fill everything in for you. Or skip the upload and fill in what you know — every field is optional.</div>
 
+      <!-- ── INSPECTION UPLOAD — HERO (moved first) ── -->
+      <div style="background:linear-gradient(135deg,rgba(21,101,192,.07),rgba(0,131,143,.05));border:1.5px solid rgba(21,101,192,.2);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.5rem">
+
+        <!-- Header row -->
+        <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:1rem">
+          <div style="width:40px;height:40px;border-radius:10px;background:var(--accent-bg);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">🔍</div>
+          <div>
+            <div style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:3px">Got your inspection report? Start here.</div>
+            <div style="font-size:12px;color:var(--text2);line-height:1.65">We'll read it and fill in everything below — year built, square footage, heating & cooling, roof age, electrical panel, plumbing, and more. You confirm before anything saves. <strong style="color:var(--text)">Your report never leaves your device.</strong></div>
+          </div>
+        </div>
+
+        <!-- What we extract preview -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:1rem">
+          <div style="display:flex;align-items:center;gap:7px;font-size:11px;color:var(--text2)"><span style="color:var(--accent)">✓</span> Year built &amp; square footage</div>
+          <div style="display:flex;align-items:center;gap:7px;font-size:11px;color:var(--text2)"><span style="color:var(--accent)">✓</span> Heating &amp; cooling systems</div>
+          <div style="display:flex;align-items:center;gap:7px;font-size:11px;color:var(--text2)"><span style="color:var(--accent)">✓</span> Roof age &amp; material</div>
+          <div style="display:flex;align-items:center;gap:7px;font-size:11px;color:var(--text2)"><span style="color:var(--accent)">✓</span> Water heater type &amp; age</div>
+          <div style="display:flex;align-items:center;gap:7px;font-size:11px;color:var(--text2)"><span style="color:var(--accent)">✓</span> Electrical panel type &amp; condition</div>
+          <div style="display:flex;align-items:center;gap:7px;font-size:11px;color:var(--text2)"><span style="color:var(--accent)">✓</span> Plumbing &amp; foundation</div>
+          <div style="display:flex;align-items:center;gap:7px;font-size:11px;color:var(--text2)"><span style="color:var(--accent)">✓</span> Repair &amp; safety items — saved to your Inspection Report tab</div>
+        </div>
+
+        <!-- Upload zone -->
+        <div id="ob-insp-upload-zone"
+          style="border:2px dashed rgba(21,101,192,.3);border-radius:var(--radius-sm);padding:1.25rem;text-align:center;background:rgba(21,101,192,.04);cursor:pointer;transition:all .2s"
+          onclick="document.getElementById('ob-insp-file').click()"
+          ondragover="event.preventDefault();this.style.borderColor='var(--accent)';this.style.background='rgba(21,101,192,.09)'"
+          ondragleave="this.style.borderColor='rgba(21,101,192,.3)';this.style.background='rgba(21,101,192,.04)'"
+          ondrop="obInspDrop(event)">
+          <div style="font-size:14px;font-weight:600;color:var(--accent);margin-bottom:4px">📎 Drop your report here, or click to browse</div>
+          <div style="font-size:11px;color:var(--text3)">PDF or image (JPG, PNG) · under 20MB · takes about 15 seconds</div>
+          <input type="file" id="ob-insp-file" accept=".pdf,image/*" style="display:none" onchange="obInspUpload(this)"/>
+        </div>
+
+        <!-- Loading -->
+        <div id="ob-insp-loading" style="display:none;text-align:center;padding:.875rem 0 .25rem">
+          <div style="font-size:12px;color:var(--text2);margin-bottom:.625rem">Reading your report and extracting home details — about 15 seconds…</div>
+          <div class="dot-pulse" style="justify-content:center"><span></span><span></span><span></span></div>
+        </div>
+
+        <!-- Review panel (shown after AI runs) -->
+        <div id="ob-insp-review" style="display:none;margin-top:.875rem">
+
+          <!-- Overall verdict -->
+          <div id="ob-insp-verdict" style="border-radius:var(--radius-sm);padding:.875rem 1rem;margin-bottom:.875rem;font-size:13px;line-height:1.65"></div>
+
+          <!-- Extracted items table -->
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;margin-bottom:.875rem">
+            <div style="background:var(--surface2);padding:.625rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+              <div>
+                <div style="font-size:12px;font-weight:600;color:var(--text)">✦ Found in your report</div>
+                <div style="font-size:11px;color:var(--text3);margin-top:1px">Review and edit any value, then confirm or skip. Nothing saves until you click Apply.</div>
+              </div>
+              <button class="btn btn-ghost btn-sm" style="font-size:11px" onclick="obInspReset()">↺ Re-upload</button>
+            </div>
+            <div id="ob-insp-items" style="padding:.25rem 0;max-height:260px;overflow-y:auto"></div>
+          </div>
+
+          <!-- Repair callout — hidden during setup, repairs saved to Inspection Report tab -->
+          <div id="ob-insp-repairs-callout" style="display:none;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.75rem 1rem;margin-bottom:.875rem;font-size:12px;color:var(--text2);line-height:1.7">
+            <strong style="color:var(--text);display:block;margin-bottom:4px">📋 Maintenance &amp; repair items — saved to your Inspection Report tab</strong>
+            <div id="ob-insp-repairs-list"></div>
+          </div>
+
+          <!-- Extras -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:.875rem">
+            <div class="ob-field" style="margin:0">
+              <label style="font-size:11px">Anything else to add? (appliance)</label>
+              <input class="ob-first-input" id="ob-extra-appliance" placeholder="e.g. Dishwasher, ~8 years old"/>
+            </div>
+            <div class="ob-field" style="margin:0">
+              <label style="font-size:11px">Extra repair note</label>
+              <input class="ob-first-input" id="ob-extra-repair" placeholder="e.g. Crack in foundation noted"/>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-primary btn-sm" style="flex:1;justify-content:center" onclick="obInspApplyAll()">✓ Apply confirmed items &amp; fill in fields below</button>
+            <button class="btn btn-ghost btn-sm" onclick="obInspSkipReview()">Skip for now</button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ── SEPARATOR ── -->
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:1.25rem">
+        <div style="flex:1;height:1px;background:var(--border)"></div>
+        <div style="font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.06em">Confirm or fill in manually</div>
+        <div style="flex:1;height:1px;background:var(--border)"></div>
+      </div>
+
+      <!-- Pre-fill notice -->
+      <div id="ob-insp-prefill-notice" style="display:none;align-items:flex-start;gap:10px;background:rgba(0,131,143,.08);border:1px solid rgba(0,131,143,.22);border-radius:var(--radius-sm);padding:.75rem 1rem;margin-bottom:1.25rem;font-size:12px;color:var(--text2);line-height:1.55">
+        <span style="font-size:14px;flex-shrink:0;color:var(--teal)">✦</span>
+        <span></span>
+      </div>
+
+      <!-- ── HOME DETAILS (was Step 4) ── -->
       <div class="ob-field">
         <label>Do you own or rent?</label>
         <div class="ob-chip-row">
@@ -7170,7 +8308,7 @@ function obUpdateSummary(){
         </div>
       </div>
 
-      <div class="ob-field" style="margin-bottom:0">
+      <div class="ob-field" style="margin-bottom:1.5rem">
         <label>How many people live here?</label>
         <div class="ob-chip-row">
           <input type="hidden" id="ob-occupants" value=""/>
@@ -7182,114 +8320,14 @@ function obUpdateSummary(){
         </div>
         <div style="font-size:11px;color:var(--text3);margin-top:5px">Used to benchmark utility usage — a 4-person household uses roughly 2× more water than a 1-person household.</div>
       </div>
-    </div>
 
-    <!-- STEP 5: Systems -->
-    <div class="ob-step" id="ob-step-5">
-      <div class="ob-step-label">Step 5 of 7</div>
-      <div class="ob-title">Your home's systems &amp; condition</div>
-      <div class="ob-sub">The fastest way through this step is to upload your inspection report — we'll read it and fill everything in for you. No report? No problem. We'll guide you through each field.</div>
-
-      <!-- ── INSPECTION UPLOAD — HERO ── -->
-      <div style="background:linear-gradient(135deg,rgba(21,101,192,.07),rgba(0,131,143,.05));border:1.5px solid rgba(21,101,192,.2);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.5rem">
-
-        <!-- Header row -->
-        <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:1rem">
-          <div style="width:40px;height:40px;border-radius:10px;background:var(--accent-bg);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">🔍</div>
-          <div>
-            <div style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:3px">Upload your home inspection report</div>
-            <div style="font-size:12px;color:var(--text2);line-height:1.65">We'll read through it and fill in every field below automatically — appliance ages, heating & cooling types, roof condition, electrical panel, plumbing, and any repair items. You confirm what looks right before anything saves. <strong style="color:var(--text)">Your report never leaves your device.</strong></div>
-          </div>
-        </div>
-
-        <!-- What we extract preview -->
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:1rem">
-          <div style="display:flex;align-items:center;gap:7px;font-size:11px;color:var(--text2)"><span style="color:var(--accent)">✓</span> Heating &amp; cooling systems</div>
-          <div style="display:flex;align-items:center;gap:7px;font-size:11px;color:var(--text2)"><span style="color:var(--accent)">✓</span> Water heater type &amp; age</div>
-          <div style="display:flex;align-items:center;gap:7px;font-size:11px;color:var(--text2)"><span style="color:var(--accent)">✓</span> Roof age &amp; material</div>
-          <div style="display:flex;align-items:center;gap:7px;font-size:11px;color:var(--text2)"><span style="color:var(--accent)">✓</span> Electrical panel type &amp; condition</div>
-          <div style="display:flex;align-items:center;gap:7px;font-size:11px;color:var(--text2)"><span style="color:var(--accent)">✓</span> Plumbing &amp; water supply</div>
-          <div style="display:flex;align-items:center;gap:7px;font-size:11px;color:var(--text2)"><span style="color:var(--accent)">✓</span> Foundation &amp; structural notes</div>
-          <div style="display:flex;align-items:center;gap:7px;font-size:11px;color:var(--text2)"><span style="color:var(--accent)">✓</span> Attic, insulation &amp; ventilation</div>
-          <div style="display:flex;align-items:center;gap:7px;font-size:11px;color:var(--text2)"><span style="color:var(--accent)">✓</span> Repair &amp; safety items flagged</div>
-        </div>
-
-        <!-- Upload zone -->
-        <div id="ob-insp-upload-zone"
-          style="border:2px dashed rgba(21,101,192,.3);border-radius:var(--radius-sm);padding:1.25rem;text-align:center;background:rgba(21,101,192,.04);cursor:pointer;transition:all .2s"
-          onclick="document.getElementById('ob-insp-file').click()"
-          ondragover="event.preventDefault();this.style.borderColor='var(--accent)';this.style.background='rgba(21,101,192,.09)'"
-          ondragleave="this.style.borderColor='rgba(21,101,192,.3)';this.style.background='rgba(21,101,192,.04)'"
-          ondrop="obInspDrop(event)">
-          <div style="font-size:14px;font-weight:600;color:var(--accent);margin-bottom:4px">📎 Drop your report here, or click to browse</div>
-          <div style="font-size:11px;color:var(--text3)">PDF or image (JPG, PNG) · under 20MB · takes about 15 seconds</div>
-          <input type="file" id="ob-insp-file" accept=".pdf,image/*" style="display:none" onchange="obInspUpload(this)"/>
-        </div>
-
-        <!-- Loading -->
-        <div id="ob-insp-loading" style="display:none;text-align:center;padding:.875rem 0 .25rem">
-          <div style="font-size:12px;color:var(--text2);margin-bottom:.625rem">Reading your report and extracting home details — about 15 seconds…</div>
-          <div class="dot-pulse" style="justify-content:center"><span></span><span></span><span></span></div>
-        </div>
-
-        <!-- Review panel (shown after AI runs) -->
-        <div id="ob-insp-review" style="display:none;margin-top:.875rem">
-
-          <!-- Overall verdict -->
-          <div id="ob-insp-verdict" style="border-radius:var(--radius-sm);padding:.875rem 1rem;margin-bottom:.875rem;font-size:13px;line-height:1.65"></div>
-
-          <!-- Extracted items table -->
-          <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;margin-bottom:.875rem">
-            <div style="background:var(--surface2);padding:.625rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
-              <div>
-                <div style="font-size:12px;font-weight:600;color:var(--text)">✦ Found in your report</div>
-                <div style="font-size:11px;color:var(--text3);margin-top:1px">Review and edit any value, then confirm or skip. Nothing saves until you click Apply.</div>
-              </div>
-              <button class="btn btn-ghost btn-sm" style="font-size:11px" onclick="obInspReset()">↺ Re-upload</button>
-            </div>
-            <div id="ob-insp-items" style="padding:.25rem 0;max-height:260px;overflow-y:auto"></div>
-          </div>
-
-          <!-- Repair callout -->
-          <div id="ob-insp-repairs-callout" style="display:none;background:var(--amber-bg);border:1px solid var(--amber-border);border-radius:var(--radius-sm);padding:.75rem 1rem;margin-bottom:.875rem;font-size:12px;color:var(--text2);line-height:1.7">
-            <strong style="color:var(--amber);display:block;margin-bottom:4px">🔧 Repair &amp; safety items found — saved to your Home Journal</strong>
-            <div id="ob-insp-repairs-list"></div>
-          </div>
-
-          <!-- Extras -->
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:.875rem">
-            <div class="ob-field" style="margin:0">
-              <label style="font-size:11px">Anything else to add? (appliance)</label>
-              <input class="ob-first-input" id="ob-extra-appliance" placeholder="e.g. Dishwasher, ~8 years old"/>
-            </div>
-            <div class="ob-field" style="margin:0">
-              <label style="font-size:11px">Extra repair note</label>
-              <input class="ob-first-input" id="ob-extra-repair" placeholder="e.g. Crack in foundation noted"/>
-            </div>
-          </div>
-
-          <div style="display:flex;gap:8px">
-            <button class="btn btn-primary btn-sm" style="flex:1;justify-content:center" onclick="obInspApplyAll()">✓ Apply confirmed items &amp; fill in fields below</button>
-            <button class="btn btn-ghost btn-sm" onclick="obInspSkipReview()">Skip for now</button>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- ── SEPARATOR ── -->
+      <!-- ── SYSTEMS FIELDS (was Step 5, now second half of combined step) ── -->
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:1.25rem">
         <div style="flex:1;height:1px;background:var(--border)"></div>
-        <div style="font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.06em">Or fill in manually</div>
+        <div style="font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.06em">Home systems</div>
         <div style="flex:1;height:1px;background:var(--border)"></div>
       </div>
 
-      <!-- Pre-fill notice -->
-      <div id="ob-insp-prefill-notice" style="display:none;align-items:flex-start;gap:10px;background:rgba(0,131,143,.08);border:1px solid rgba(0,131,143,.22);border-radius:var(--radius-sm);padding:.75rem 1rem;margin-bottom:1.25rem;font-size:12px;color:var(--text2);line-height:1.55">
-        <span style="font-size:14px;flex-shrink:0;color:var(--teal)">✦</span>
-        <span></span>
-      </div>
-
-      <!-- Systems fields -->
       <div class="ob-grid-2">
 
         <div class="ob-field">
@@ -7426,19 +8464,21 @@ function obUpdateSummary(){
         </div>
       </div>
 
-      <!-- No report? friendly tip -->
+      <!-- No report tip -->
       <div style="display:flex;align-items:flex-start;gap:10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.875rem 1rem;margin-top:1.25rem;font-size:12px;color:var(--text2);line-height:1.65">
         <span style="font-size:16px;flex-shrink:0">💡</span>
         <div>
           <strong style="color:var(--text);display:block;margin-bottom:3px">Don't have your inspection report handy?</strong>
-          Skip any fields you're not sure about — you can always update them later in <strong style="color:var(--text)">Home Profile</strong>. If you get your inspection report later, you can upload it anytime under <strong style="color:var(--text)">Inspection Report</strong> in the sidebar and HomeBase will read it for you.
+          Skip any fields you're not sure about — you can always update them later in <strong style="color:var(--text)">Home Profile</strong>. Upload your inspection report anytime from the <strong style="color:var(--text)">Inspection Report</strong> tab in the sidebar.
         </div>
       </div>
     </div>
 
-    <!-- STEP 6: Other Documents -->
-    <div class="ob-step" id="ob-step-6">
-      <div class="ob-step-label">Step 7 of 8</div>
+    <!-- STEP 5: removed — merged into Step 4 above -->
+
+    <!-- STEP 5: Other Documents -->
+    <div class="ob-step" id="ob-step-5">
+      <div class="ob-step-label">Step 5 of 6</div>
       <div class="ob-title">While you're at it…</div>
       <div class="ob-sub">Got any of these nearby? Drop them in and HomeBase will read through them for you. Totally optional — everything can be uploaded later from the Document Vault.</div>
 
@@ -7483,8 +8523,8 @@ function obUpdateSummary(){
       </div>
     </div>
 
-    <!-- STEP 7: Ready -->
-    <div class="ob-step" id="ob-step-7">
+    <!-- STEP 6: Ready -->
+    <div class="ob-step" id="ob-step-6">
       <div style="text-align:center;padding:.375rem 0 .5rem">
         <span class="ob-confetti">🎉</span>
         <div class="ob-title" style="text-align:center">Your dashboard is ready.</div>
@@ -7559,8 +8599,6 @@ function obUpdateSummary(){
         <div class="ob-dot"></div>
         <div class="ob-dot"></div>
         <div class="ob-dot"></div>
-        <div class="ob-dot"></div>
-        <div class="ob-dot"></div>
       </div>
       <div class="ob-nav">
         <button class="btn btn-ghost btn-sm" id="ob-back-btn" style="display:none" onclick="obBack()">← Back</button>
@@ -7624,14 +8662,14 @@ const TOUR_STEPS=[
     title:'Bills — everything in one place',
     nav:'bills',
     highlight:'#view-bills',
-    body:'Add every recurring home expense — mortgage, utilities, insurance, internet, subscriptions. HomeBase tracks <strong>due dates</strong>, flags what\'s <strong>overdue</strong>, and lets you mark bills paid with one tap. Bills set to autopay are marked on time automatically.',
-    features:['Due date tracking & overdue alerts','One-tap mark as paid','Autopay detection','Filter by category or status','Full payment history']
+    body:'Add every recurring home expense — mortgage, utilities, insurance, internet, subscriptions. Use the <strong>dropdown</strong> at the top to switch between your active bills and <strong>Payment History</strong>. Essential bills are shown first; lifestyle bills appear below as a collapsible section.',
+    features:['Due date tracking & overdue alerts','One-tap mark as paid','Autopay detection','Filter by status','Payment History in the same view']
   },
   {
     icon:'💡',
     title:'Recommendations — where savings happen',
-    nav:'recommendations',
-    highlight:'#view-recommendations',
+    nav:'insights',
+    highlight:'#view-insights',
     body:'<strong>AI analyses your exact bills and home profile</strong> to surface specific, actionable savings — not generic tips. The more data you add, the more precise the estimates. Upload your insurance policy and we\'ll calculate whether you\'re overpaying, down to the dollar.',
     features:['AI-powered bill analysis','Real dollar savings estimates','Insurance rate comparison','Mortgage refinance calculator','Solar payback estimate','Personalised partner quotes']
   },
@@ -7792,7 +8830,7 @@ function tourEnd(){
 // ── END TOUR ENGINE ────────────────────────────────────────────────────────────
 
 function obHandleNext(){
-  if(obStep===6){obUpdateSummary();obUpdateDocsSummary();}
+  if(obStep===5){obUpdateSummary();obUpdateDocsSummary();}
   if(obStep<OB_TOTAL) window.obGoTo(obStep+1);
 }
 
@@ -7803,16 +8841,55 @@ window.obGoTo=function(n){
   const footerNav=document.getElementById('ob-footer-nav');
   const nextBtn=document.getElementById('ob-next-btn');
   const backBtn=document.getElementById('ob-back-btn');
-  if(n===1||n===7){
+  if(n===1||n===6){
     if(footerNav) footerNav.style.display='none';
   } else {
     if(footerNav) footerNav.style.display='flex';
     if(nextBtn){
-      if(n===6) nextBtn.textContent='Almost done →';
+      if(n===5) nextBtn.textContent='Almost done →';
       else nextBtn.textContent='Continue →';
     }
   }
   if(backBtn) backBtn.style.display=n>1?'inline-flex':'none';
+
+  // Step 4: check if inspection was already uploaded (from a prior session or earlier in this wizard)
+  // If so, show the "already uploaded" confirmation and pre-fill form fields
+  if(n===4){
+    const savedInsp=loadInspection();
+    if(savedInsp&&savedInsp.autofill){
+      const af=savedInsp.autofill||{};
+      const uploadZone=document.getElementById('ob-insp-upload-zone');
+      const review=document.getElementById('ob-insp-review');
+      if(uploadZone&&!uploadZone.innerHTML.includes('already uploaded')&&!uploadZone.innerHTML.includes('Inspection report saved')&&!uploadZone.innerHTML.includes('Inspection report applied')){
+        uploadZone.innerHTML=`
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="font-size:22px">✓</span>
+            <div>
+              <div style="font-size:13px;font-weight:600;color:var(--green);margin-bottom:2px">Inspection report already uploaded</div>
+              <div style="font-size:11px;color:var(--text3)">Fields have been pre-filled from your report. <button class="btn btn-ghost btn-sm" style="font-size:10px;padding:2px 8px;margin-left:4px" onclick="obInspReset()">↺ Re-upload</button></div>
+            </div>
+          </div>`;
+      }
+      // Pre-fill year and sqft from saved inspection data if not already filled
+      if(af.yearBuilt){const el=document.getElementById('ob-year');if(el&&!el.value){el.value=af.yearBuilt;obMarkPrefilled(el);}}
+      if(af.sqft){const el=document.getElementById('ob-sqft');if(el&&!el.value){el.value=af.sqft;obMarkPrefilled(el);}}
+      // Pre-fill systems dropdowns
+      if(af.heatingType){const el=document.getElementById('ob-heating');if(el&&!el.value){const opts=[...el.options];const m=opts.find(o=>o.value===af.heatingType);if(m){el.value=m.value;obMarkPrefilled(el);}}}
+      if(af.coolingType){const el=document.getElementById('ob-cooling');if(el&&!el.value){const opts=[...el.options];const m=opts.find(o=>o.value===af.coolingType);if(m){el.value=m.value;obMarkPrefilled(el);}}}
+      if(af.waterHeaterType){const el=document.getElementById('ob-wh');if(el&&!el.value){const opts=[...el.options];const m=opts.find(o=>o.value===af.waterHeaterType);if(m){el.value=m.value;obMarkPrefilled(el);}}}
+      if(af.electricalPanel){const el=document.getElementById('ob-elec-panel');if(el&&!el.value){const opts=[...el.options];const m=opts.find(o=>o.value===af.electricalPanel);if(m){el.value=m.value;obMarkPrefilled(el);}}}
+      if(af.plumbingMaterial){const el=document.getElementById('ob-plumbing');if(el&&!el.value){const opts=[...el.options];const m=opts.find(o=>o.value===af.plumbingMaterial);if(m){el.value=m.value;obMarkPrefilled(el);}}}
+      // Show prefill notice
+      const notice=document.getElementById('ob-insp-prefill-notice');
+      if(notice){
+        const filledCount=[af.yearBuilt,af.sqft,af.heatingType,af.coolingType,af.waterHeaterType,af.electricalPanel,af.plumbingMaterial].filter(Boolean).length;
+        if(filledCount>0){
+          notice.style.display='flex';
+          notice.querySelector('span').textContent=`✦ ${filledCount} field${filledCount!==1?'s':''} pre-filled from your inspection report — highlighted in teal. Review and adjust anything that looks off.`;
+        }
+      }
+    }
+  }
 };
 
 // Initial state — hide footer (step 1 is shown first)
